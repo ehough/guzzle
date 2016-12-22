@@ -347,7 +347,14 @@ function json_decode($json, $assoc = false, $depth = 512, $options = 0)
  */
 function json_encode($value, $options = 0, $depth = 512)
 {
-    $json = \json_encode($value, $options, $depth);
+    if (version_compare(PHP_VERSION, '5.5', '>=')) {
+
+        $json = \json_encode($value, $options, $depth);
+    } else {
+
+        $json = \json_decode($value, $options);
+    }
+
     if (JSON_ERROR_NONE !== json_last_error()) {
         throw new \InvalidArgumentException(
             'json_encode error: ' . json_last_error_msg());
