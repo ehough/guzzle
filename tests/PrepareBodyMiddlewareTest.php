@@ -15,17 +15,17 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
 {
     public function testAddsContentLengthWhenMissingAndPossible()
     {
-        $h = new MockHandler([
+        $h = new MockHandler(array(
             function (RequestInterface $request) {
                 $this->assertEquals(3, $request->getHeaderLine('Content-Length'));
                 return new Response(200);
             }
-        ]);
+        ));
         $m = Middleware::prepareBody();
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), '123'), []);
+        $p = $comp(new Request('PUT', 'http://www.google.com', array(), '123'), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -33,21 +33,21 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testAddsTransferEncodingWhenNoContentLength()
     {
-        $body = FnStream::decorate(Psr7\stream_for('foo'), [
+        $body = FnStream::decorate(Psr7\stream_for('foo'), array(
             'getSize' => function () { return null; }
-        ]);
-        $h = new MockHandler([
+        ));
+        $h = new MockHandler(array(
             function (RequestInterface $request) {
                 $this->assertFalse($request->hasHeader('Content-Length'));
                 $this->assertEquals('chunked', $request->getHeaderLine('Transfer-Encoding'));
                 return new Response(200);
             }
-        ]);
+        ));
         $m = Middleware::prepareBody();
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $body), []);
+        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $body), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -56,18 +56,18 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
     public function testAddsContentTypeWhenMissingAndPossible()
     {
         $bd = Psr7\stream_for(fopen(__DIR__ . '/../composer.json', 'r'));
-        $h = new MockHandler([
+        $h = new MockHandler(array(
             function (RequestInterface $request) {
                 $this->assertEquals('application/json', $request->getHeaderLine('Content-Type'));
                 $this->assertTrue($request->hasHeader('Content-Length'));
                 return new Response(200);
             }
-        ]);
+        ));
         $m = Middleware::prepareBody();
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $bd), []);
+        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $bd), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -75,12 +75,12 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function expectProvider()
     {
-        return [
-            [true, ['100-Continue']],
-            [false, []],
-            [10, ['100-Continue']],
-            [500000, []]
-        ];
+        return array(
+            array(true, array('100-Continue')),
+            array(false, array()),
+            array(10, array('100-Continue')),
+            array(500000, array())
+        );
     }
 
     /**
@@ -90,20 +90,20 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $bd = Psr7\stream_for(fopen(__DIR__ . '/../composer.json', 'r'));
 
-        $h = new MockHandler([
+        $h = new MockHandler(array(
             function (RequestInterface $request) use ($result) {
                 $this->assertEquals($result, $request->getHeader('Expect'));
                 return new Response(200);
             }
-        ]);
+        ));
 
         $m = Middleware::prepareBody();
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $bd), [
+        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $bd), array(
             'expect' => $value
-        ]);
+        ));
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -112,20 +112,20 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
     public function testIgnoresIfExpectIsPresent()
     {
         $bd = Psr7\stream_for(fopen(__DIR__ . '/../composer.json', 'r'));
-        $h = new MockHandler([
+        $h = new MockHandler(array(
             function (RequestInterface $request) {
-                $this->assertEquals(['Foo'], $request->getHeader('Expect'));
+                $this->assertEquals(array('Foo'), $request->getHeader('Expect'));
                 return new Response(200);
             }
-        ]);
+        ));
 
         $m = Middleware::prepareBody();
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
         $p = $comp(
-            new Request('PUT', 'http://www.google.com', ['Expect' => 'Foo'], $bd),
-            ['expect' => true]
+            new Request('PUT', 'http://www.google.com', array('Expect' => 'Foo'), $bd),
+            array('expect' => true)
         );
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();

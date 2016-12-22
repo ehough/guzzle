@@ -325,7 +325,15 @@ function is_host_in_noproxy($host, array $noProxyArray)
  */
 function json_decode($json, $assoc = false, $depth = 512, $options = 0)
 {
-    $data = \json_decode($json, $assoc, $depth, $options);
+    if (version_compare(PHP_VERSION, '5.4', '>=')) {
+
+        $data = \json_decode($json, $assoc, $depth, $options);
+
+    } else {
+
+        $data = \json_decode($json, $assoc, $depth);
+    }
+
     if (JSON_ERROR_NONE !== json_last_error()) {
         throw new \InvalidArgumentException(
             'json_decode error: ' . json_last_error_msg());
@@ -352,7 +360,7 @@ function json_encode($value, $options = 0, $depth = 512)
         $json = \json_encode($value, $options, $depth);
     } else {
 
-        $json = \json_decode($value, $options);
+        $json = \json_encode($value, $options);
     }
 
     if (JSON_ERROR_NONE !== json_last_error()) {

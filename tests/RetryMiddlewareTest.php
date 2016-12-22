@@ -26,10 +26,10 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
             return 1;
         };
         $m = Middleware::retry($decider, $delay);
-        $h = new MockHandler([new Response(200), new Response(201), new Response(202)]);
+        $h = new MockHandler(array(new Response(200), new Response(201), new Response(202)));
         $f = $m($h);
-        $c = new Client(['handler' => $f]);
-        $p = $c->sendAsync(new Request('GET', 'http://test.com'), []);
+        $c = new Client(array('handler' => $f));
+        $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $p->wait();
         $this->assertCount(3, $calls);
         $this->assertEquals(2, $delayCalls);
@@ -40,9 +40,9 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $decider = function () { return false; };
         $m = Middleware::retry($decider);
-        $h = new MockHandler([new Response(200)]);
-        $c = new Client(['handler' => $m($h)]);
-        $p = $c->sendAsync(new Request('GET', 'http://test.com'), []);
+        $h = new MockHandler(array(new Response(200)));
+        $c = new Client(array('handler' => $m($h)));
+        $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $this->assertEquals(200, $p->wait()->getStatusCode());
     }
 
@@ -54,9 +54,9 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
             return $error instanceof \Exception;
         };
         $m = Middleware::retry($decider);
-        $h = new MockHandler([new \Exception(), new Response(201)]);
-        $c = new Client(['handler' => $m($h)]);
-        $p = $c->sendAsync(new Request('GET', 'http://test.com'), []);
+        $h = new MockHandler(array(new \Exception(), new Response(201)));
+        $c = new Client(array('handler' => $m($h)));
+        $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $this->assertEquals(201, $p->wait()->getStatusCode());
         $this->assertCount(2, $calls);
         $this->assertEquals(0, $calls[0][0]);
