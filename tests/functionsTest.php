@@ -20,7 +20,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
     public function testProvidesDefaultUserAgent()
     {
         $ua = \Hough\Guzzle6\default_user_agent();
-        $this->assertEquals(1, preg_match('#^ehough/guzzle/[1-9]+\.[0-9]+\.[0-9]+ curl/.+ PHP/.+$#', $ua));
+        $this->assertEquals(1, preg_match('#^ehough/guzzle6/[1-9]+\.[0-9]+\.[0-9]+ curl/.+ PHP/.+$#', $ua));
     }
 
     public function typeProvider()
