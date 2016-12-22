@@ -2,7 +2,6 @@
 namespace Hough\Guzzle6;
 
 use Hough\Promise\PromisorInterface;
-use Psr\Http\Message\RequestInterface;
 use Hough\Promise\EachPromise;
 
 /**
@@ -51,20 +50,7 @@ class Pool implements PromisorInterface
         }
 
         $iterable = \Hough\Promise\iter_for($requests);
-        $requests = function () use ($iterable, $client, $opts) {
-            foreach ($iterable as $key => $rfn) {
-                if ($rfn instanceof RequestInterface) {
-                    yield $key => $client->sendAsync($rfn, $opts);
-                } elseif (is_callable($rfn)) {
-                    yield $key => $rfn($opts);
-                } else {
-                    throw new \InvalidArgumentException('Each value yielded by '
-                        . 'the iterator must be a Psr7\Http\Message\RequestInterface '
-                        . 'or a callable that returns a promise that fulfills '
-                        . 'with a Psr7\Message\Http\ResponseInterface object.');
-                }
-            }
-        };
+        $requests = new PoolGenerator($iterable, $client, $opts);
 
         $this->each = new EachPromise($requests(), $config);
     }
