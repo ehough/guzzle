@@ -13,7 +13,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
     {
         $f = function () {};
         $m1 = function () {};
-        $h = new HandlerStack($f, [$m1]);
+        $h = new HandlerStack($f, array($m1));
         $this->assertTrue($h->hasHandler());
     }
 
@@ -45,7 +45,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $composed = $builder->resolve();
         $this->assertEquals('Hello - test123', $composed('test'));
         $this->assertEquals(
-            [['a', 'test'], ['b', 'test1'], ['c', 'test12']],
+            array(array('a', 'test'), array('b', 'test1'), array('c', 'test12')),
             $meths[0]
         );
     }
@@ -61,7 +61,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $composed = $builder->resolve();
         $this->assertEquals('Hello - test321', $composed('test'));
         $this->assertEquals(
-            [['c', 'test'], ['b', 'test3'], ['a', 'test32']],
+            array(array('c', 'test'), array('b', 'test3'), array('a', 'test32')),
             $meths[0]
         );
     }
@@ -87,8 +87,8 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder = new HandlerStack();
         $builder->setHandler($meths[1]);
         $builder->push($meths[2], 'a');
-        $builder->push([__CLASS__, 'foo']);
-        $builder->push([$this, 'bar']);
+        $builder->push(array(__CLASS__, 'foo'));
+        $builder->push(array($this, 'bar'));
         $builder->push(__CLASS__ . '::' . 'foo');
         $lines = explode("\n", (string) $builder);
         $this->assertContains("> 4) Name: 'a', Function: callable(", $lines[0]);
@@ -145,20 +145,20 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
 
     public function testPicksUpCookiesFromRedirects()
     {
-        $mock = new MockHandler([
-            new Response(301, [
+        $mock = new MockHandler(array(
+            new Response(301, array(
                 'Location'   => 'http://foo.com/baz',
                 'Set-Cookie' => 'foo=bar; Domain=foo.com'
-            ]),
+            )),
             new Response(200)
-        ]);
+        ));
         $handler = HandlerStack::create($mock);
         $request = new Request('GET', 'http://foo.com/bar');
         $jar = new CookieJar();
-        $response = $handler($request, [
+        $response = $handler($request, array(
             'allow_redirects' => true,
             'cookies' => $jar
-        ])->wait();
+        ))->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $lastRequest = $mock->getLastRequest();
         $this->assertEquals('http://foo.com/baz', (string) $lastRequest->getUri());
@@ -171,21 +171,21 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
 
         $a = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
-                $calls[] = ['a', $v];
+                $calls[] = array('a', $v);
                 return $next($v . '1');
             };
         };
 
         $b = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
-                $calls[] = ['b', $v];
+                $calls[] = array('b', $v);
                 return $next($v . '2');
             };
         };
 
         $c = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
-                $calls[] = ['c', $v];
+                $calls[] = array('c', $v);
                 return $next($v . '3');
             };
         };
@@ -194,7 +194,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
             return 'Hello - ' . $v;
         };
 
-        return [&$calls, $handler, $a, $b, $c];
+        return array(&$calls, $handler, $a, $b, $c);
     }
 
     public static function foo() {}
