@@ -16,7 +16,7 @@ use Psr\Http\Message\RequestInterface;
 class CurlFactory implements CurlFactoryInterface
 {
     /** @var array */
-    private $handles = [];
+    private $handles = array();
 
     /** @var int Total number of idle handles to keep in cache */
     private $maxHandles;
@@ -77,6 +77,19 @@ class CurlFactory implements CurlFactoryInterface
             curl_setopt($resource, CURLOPT_PROGRESSFUNCTION, null);
             curl_reset($resource);
             $this->handles[] = $resource;
+        }
+    }
+
+    private function curl_reset(&$resource)
+    {
+        if (function_exists('curl_reset')) {
+
+            curl_reset($resource);
+
+        } else {
+
+            //http://php.net/manual/en/function.curl-reset.php#119616
+            $resource = curl_init();
         }
     }
 
