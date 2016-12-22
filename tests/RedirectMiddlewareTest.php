@@ -11,7 +11,7 @@ use Hough\Guzzle6\RedirectMiddleware;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * @covers Hough\Guzzle6\RedirectMiddleware
+ * @covers \Hough\Guzzle6\RedirectMiddleware
  */
 class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
 {

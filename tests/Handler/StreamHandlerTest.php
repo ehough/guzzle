@@ -243,7 +243,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('GET', Server::$url, [], null, '1.0');
+        $request = new Request('GET', Server::$url, array(), null, '1.0');
         $handler($request, []);
         $this->assertEquals('1.0', Server::received()[0]->getProtocolVersion());
     }
@@ -463,7 +463,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('PUT', Server::$url, [], 'foo');
+        $request = new Request('PUT', Server::$url, array(), 'foo');
         $handler($request, []);
         $req = Server::received()[0];
         $this->assertEquals(3, $req->getHeaderLine('Content-Length'));
@@ -473,7 +473,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('PUT', Server::$url, [], '');
+        $request = new Request('PUT', Server::$url, array(), '');
         $handler($request, []);
         $req = Server::received()[0];
         $this->assertEquals(0, $req->getHeaderLine('Content-Length'));

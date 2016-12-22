@@ -7,7 +7,7 @@ use Hough\Psr7\Response;
 use Hough\Guzzle6\MessageFormatter;
 
 /**
- * @covers Hough\Guzzle6\MessageFormatter
+ * @covers \Hough\Guzzle6\MessageFormatter
  */
 class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 {

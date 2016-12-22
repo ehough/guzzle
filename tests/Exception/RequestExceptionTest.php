@@ -6,7 +6,7 @@ use Hough\Psr7\Request;
 use Hough\Psr7\Response;
 
 /**
- * @covers Hough\Guzzle6\Exception\RequestException
+ * @covers \Hough\Guzzle6\Exception\RequestException
  */
 class RequestExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -89,7 +89,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
     {
         $response = new Response(
             500,
-            [],
+            array(),
             $content
         );
         $e = RequestException::create(new Request('GET', '/'), $response);
@@ -103,7 +103,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
     public function testCreatesExceptionWithTruncatedSummary()
     {
         $content = str_repeat('+', 121);
-        $response = new Response(500, [], $content);
+        $response = new Response(500, array(), $content);
         $e = RequestException::create(new Request('GET', '/'), $response);
         $expected = str_repeat('+', 120) . ' (truncated...)';
         $this->assertContains($expected, $e->getMessage());

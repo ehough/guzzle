@@ -65,7 +65,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testSinkFilename()
     {
         $filename = sys_get_temp_dir().'/mock_test_'.uniqid();
-        $res = new Response(200, [], 'TEST CONTENT');
+        $res = new Response(200, array(), 'TEST CONTENT');
         $mock = new MockHandler([$res]);
         $request = new Request('GET', '/');
         $p = $mock($request, ['sink' => $filename]);
@@ -81,7 +81,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $file = tmpfile();
         $meta = stream_get_meta_data($file);
-        $res = new Response(200, [], 'TEST CONTENT');
+        $res = new Response(200, array(), 'TEST CONTENT');
         $mock = new MockHandler([$res]);
         $request = new Request('GET', '/');
         $p = $mock($request, ['sink' => $file]);
@@ -94,7 +94,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testSinkStream()
     {
         $stream = new \Hough\Psr7\Stream(tmpfile());
-        $res = new Response(200, [], 'TEST CONTENT');
+        $res = new Response(200, array(), 'TEST CONTENT');
         $mock = new MockHandler([$res]);
         $request = new Request('GET', '/');
         $p = $mock($request, ['sink' => $stream]);

@@ -350,7 +350,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::flush();
         Server::enqueue([new Psr7\Response()]);
         $a = new Handler\CurlMultiHandler();
-        $request = new Psr7\Request('GET', Server::$url, [], null, '1.0');
+        $request = new Psr7\Request('GET', Server::$url, array(), null, '1.0');
         $a($request, []);
         $this->assertEquals(CURL_HTTP_VERSION_1_0, $_SERVER['_curl'][CURLOPT_HTTP_VERSION]);
     }
@@ -436,7 +436,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $stream = Psr7\stream_for('abc');
         $stream->read(1);
         $stream = new Psr7\NoSeekStream($stream);
-        $request = new Psr7\Request('PUT', Server::$url, [], $stream);
+        $request = new Psr7\Request('PUT', Server::$url, array(), $stream);
         $fn = function ($request, $options) use (&$fn, $factory) {
             $easy = $factory->create($request, $options);
             return Handler\CurlFactory::finish($fn, $easy, $factory);
@@ -459,7 +459,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $factory = new Handler\CurlFactory(1);
-        $req = new Psr7\Request('PUT', Server::$url, [], $bd);
+        $req = new Psr7\Request('PUT', Server::$url, array(), $bd);
         $easy = $factory->create($req, []);
         $res = Handler\CurlFactory::finish($fn, $easy, $factory);
         $res = $res->wait();
@@ -482,7 +482,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
             return Handler\CurlFactory::finish($mock, $easy, $factory);
         };
         $mock = new Handler\MockHandler([$fn, $fn, $fn]);
-        $p = $mock(new Psr7\Request('PUT', Server::$url, [], 'test'), []);
+        $p = $mock(new Psr7\Request('PUT', Server::$url, array(), 'test'), []);
         $p->wait(false);
         $this->assertEquals(3, $call);
         $p->wait(true);
@@ -544,7 +544,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
                 return null;
             }
         ]);
-        $request = new Psr7\Request('PUT', Server::$url, [], $bd);
+        $request = new Psr7\Request('PUT', Server::$url, array(), $bd);
         $f->create($request, []);
         $this->assertEquals(1, $_SERVER['_curl'][CURLOPT_UPLOAD]);
         $this->assertTrue(is_callable($_SERVER['_curl'][CURLOPT_READFUNCTION]));

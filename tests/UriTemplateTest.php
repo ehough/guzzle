@@ -4,7 +4,7 @@ namespace Hough\Tests\Guzzle6;
 use Hough\Guzzle6\UriTemplate;
 
 /**
- * @covers Hough\Guzzle6\UriTemplate
+ * @covers \Hough\Guzzle6\UriTemplate
  */
 class UriTemplateTest extends \PHPUnit_Framework_TestCase
 {
