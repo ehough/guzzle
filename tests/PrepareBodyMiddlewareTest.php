@@ -26,7 +26,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push($m);
         $comp = $stack->resolve();
         $p = $comp(new Request('PUT', 'http://www.google.com', [], '123'), []);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -48,7 +48,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push($m);
         $comp = $stack->resolve();
         $p = $comp(new Request('PUT', 'http://www.google.com', [], $body), []);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -68,7 +68,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push($m);
         $comp = $stack->resolve();
         $p = $comp(new Request('PUT', 'http://www.google.com', [], $bd), []);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -104,7 +104,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $p = $comp(new Request('PUT', 'http://www.google.com', [], $bd), [
             'expect' => $value
         ]);
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -127,7 +127,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
             new Request('PUT', 'http://www.google.com', ['Expect' => 'Foo'], $bd),
             ['expect' => true]
         );
-        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }

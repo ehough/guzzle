@@ -617,7 +617,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertInternalType('float', $gotStats->getTransferTime());
         $this->assertInstanceOf(
-            ConnectException::class,
+            '\Hough\Guzzle6\Exception\ConnectException',
             $gotStats->getHandlerErrorData()
         );
     }

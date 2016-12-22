@@ -42,7 +42,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         ], 'testing');
         $f = new Handler\CurlFactory(3);
         $result = $f->create($request, ['sink' => $stream]);
-        $this->assertInstanceOf(EasyHandle::class, $result);
+        $this->assertInstanceOf('\Hough\Guzzle6\Handler\EasyHandle', $result);
         $this->assertInternalType('resource', $result->handle);
         $this->assertInternalType('array', $result->headers);
         $this->assertSame($stream, $result->sink);
@@ -511,7 +511,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreatesConnectException()
     {
-        $m = new \ReflectionMethod(CurlFactory::class, 'finishError');
+        $m = new \ReflectionMethod('\Hough\Guzzle6\Handler\CurlFactory', 'finishError');
         $m->setAccessible(true);
         $factory = new Handler\CurlFactory(1);
         $easy = $factory->create(new Psr7\Request('GET', Server::$url), []);

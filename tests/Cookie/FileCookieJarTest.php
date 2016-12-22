@@ -5,7 +5,7 @@ use Hough\Guzzle6\Cookie\FileCookieJar;
 use Hough\Guzzle6\Cookie\SetCookie;
 
 /**
- * @covers Hough\Guzzle6\Cookie\FileCookieJar
+ * @covers \Hough\Guzzle6\Cookie\FileCookieJar
  */
 class FileCookieJarTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class FileCookieJarTest extends \PHPUnit_Framework_TestCase
     public function testLoadsFromFile()
     {
         $jar = new FileCookieJar($this->file);
-        $this->assertEquals([], $jar->getIterator()->getArrayCopy());
+        $this->assertEquals(array(), $jar->getIterator()->getArrayCopy());
         unlink($this->file);
     }
 
