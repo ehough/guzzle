@@ -87,21 +87,21 @@ final class Middleware
             return function ($request, array $options) use ($handler, &$container) {
                 return $handler($request, $options)->then(
                     function ($value) use ($request, &$container, $options) {
-                        $container[] = [
+                        $container[] = array(
                             'request'  => $request,
                             'response' => $value,
                             'error'    => null,
                             'options'  => $options
-                        ];
+                        );
                         return $value;
                     },
                     function ($reason) use ($request, &$container, $options) {
-                        $container[] = [
+                        $container[] = array(
                             'request'  => $request,
                             'response' => null,
                             'error'    => $reason,
                             'options'  => $options
-                        ];
+                        );
                         return new RejectedPromise($reason);
                     }
                 );

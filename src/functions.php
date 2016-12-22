@@ -141,8 +141,9 @@ function default_user_agent()
 
     if (!$defaultAgent) {
         $defaultAgent = 'ehough/guzzle6/' . Client::VERSION;
+        $curlVersion  = \curl_version();
         if (extension_loaded('curl') && function_exists('curl_version')) {
-            $defaultAgent .= ' curl/' . \curl_version()['version'];
+            $defaultAgent .= ' curl/' . $curlVersion['version'];
         }
         $defaultAgent .= ' PHP/' . PHP_VERSION;
     }
@@ -167,7 +168,7 @@ function default_user_agent()
 function default_ca_bundle()
 {
     static $cached = null;
-    static $cafiles = [
+    static $cafiles = array(
         // Red Hat, CentOS, Fedora (provided by the ca-certificates package)
         '/etc/pki/tls/certs/ca-bundle.crt',
         // Ubuntu, Debian (provided by the ca-certificates package)
@@ -183,7 +184,7 @@ function default_ca_bundle()
         // Windows?
         'C:\\windows\\system32\\curl-ca-bundle.crt',
         'C:\\windows\\curl-ca-bundle.crt',
-    ];
+    );
 
     if ($cached) {
         return $cached;
@@ -265,7 +266,8 @@ function is_host_in_noproxy($host, array $noProxyArray)
 
     // Strip port if present.
     if (strpos($host, ':')) {
-        $host = explode($host, ':', 2)[0];
+        $exploded = explode($host, ':', 2);
+        $host = $exploded[0];
     }
 
     foreach ($noProxyArray as $area) {

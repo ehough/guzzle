@@ -15,25 +15,25 @@ class UriTemplate
     private $variables;
 
     /** @var array Hash for quick operator lookups */
-    private static $operatorHash = [
-        ''  => ['prefix' => '',  'joiner' => ',', 'query' => false],
-        '+' => ['prefix' => '',  'joiner' => ',', 'query' => false],
-        '#' => ['prefix' => '#', 'joiner' => ',', 'query' => false],
-        '.' => ['prefix' => '.', 'joiner' => '.', 'query' => false],
-        '/' => ['prefix' => '/', 'joiner' => '/', 'query' => false],
-        ';' => ['prefix' => ';', 'joiner' => ';', 'query' => true],
-        '?' => ['prefix' => '?', 'joiner' => '&', 'query' => true],
-        '&' => ['prefix' => '&', 'joiner' => '&', 'query' => true]
-    ];
+    private static $operatorHash = array(
+        ''  => array('prefix' => '',  'joiner' => ',', 'query' => false),
+        '+' => array('prefix' => '',  'joiner' => ',', 'query' => false),
+        '#' => array('prefix' => '#', 'joiner' => ',', 'query' => false),
+        '.' => array('prefix' => '.', 'joiner' => '.', 'query' => false),
+        '/' => array('prefix' => '/', 'joiner' => '/', 'query' => false),
+        ';' => array('prefix' => ';', 'joiner' => ';', 'query' => true),
+        '?' => array('prefix' => '?', 'joiner' => '&', 'query' => true),
+        '&' => array('prefix' => '&', 'joiner' => '&', 'query' => true)
+    );
 
     /** @var array Delimiters */
-    private static $delims = [':', '/', '?', '#', '[', ']', '@', '!', '$',
-        '&', '\'', '(', ')', '*', '+', ',', ';', '='];
+    private static $delims = array(':', '/', '?', '#', '[', ']', '@', '!', '$',
+        '&', '\'', '(', ')', '*', '+', ',', ';', '=');
 
     /** @var array Percent encoded delimiters */
-    private static $delimsPct = ['%3A', '%2F', '%3F', '%23', '%5B', '%5D',
+    private static $delimsPct = array('%3A', '%2F', '%3F', '%23', '%5B', '%5D',
         '%40', '%21', '%24', '%26', '%27', '%28', '%29', '%2A', '%2B', '%2C',
-        '%3B', '%3D'];
+        '%3B', '%3D');
 
     public function expand($template, array $variables)
     {
@@ -46,7 +46,7 @@ class UriTemplate
 
         return preg_replace_callback(
             '/\{([^\}]+)\}/',
-            [$this, 'expandMatch'],
+            array($this, 'expandMatch'),
             $this->template
         );
     }
@@ -98,7 +98,7 @@ class UriTemplate
      */
     private function expandMatch(array $matches)
     {
-        static $rfc1738to3986 = ['+' => '%20', '%7e' => '~'];
+        static $rfc1738to3986 = array('+' => '%20', '%7e' => '~');
 
         $replacements = array();
         $parsed = self::parseExpression($matches[1]);
@@ -144,7 +144,7 @@ class UriTemplate
                                 // Nested arrays must allow for deeply nested
                                 // structures.
                                 $var = strtr(
-                                    http_build_query([$key => $var]),
+                                    http_build_query(array($key => $var)),
                                     $rfc1738to3986
                                 );
                             } else {
@@ -223,7 +223,14 @@ class UriTemplate
      */
     private function isAssoc(array $array)
     {
-        return $array && array_keys($array)[0] !== 0;
+        if (!$array) {
+
+            return false;
+        }
+
+        $keys = array_keys($array);
+
+        return $keys[0] !== 0;
     }
 
     /**
