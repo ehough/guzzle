@@ -1,14 +1,14 @@
 <?php
-namespace GuzzleHttp\Test\Handler;
+namespace Hough\Test\Guzzle6\Handler;
 
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Promise\PromiseInterface;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Guzzle6\TransferStats;
 
 /**
- * @covers \GuzzleHttp\Handler\MockHandler
+ * @covers \Hough\Guzzle6\Handler\MockHandler
  */
 class MockHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -93,7 +93,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testSinkStream()
     {
-        $stream = new \GuzzleHttp\Psr7\Stream(tmpfile());
+        $stream = new \Hough\Psr7\Stream(tmpfile());
         $res = new Response(200, [], 'TEST CONTENT');
         $mock = new MockHandler([$res]);
         $request = new Request('GET', '/');
@@ -126,7 +126,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage An error was encountered during the on_headers event
      * @expectedExceptionMessage test
      */
@@ -175,7 +175,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\BadResponseException
+     * @expectedException \Hough\Guzzle6\Exception\BadResponseException
      */
     public function testCanCreateWithDefaultMiddleware()
     {

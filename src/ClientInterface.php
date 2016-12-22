@@ -1,8 +1,8 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Exception\GuzzleException;
+use Hough\Promise\PromiseInterface;
+use Hough\Guzzle6\Exception\GuzzleException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;

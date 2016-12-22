@@ -1,14 +1,14 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\FnStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Guzzle6\Middleware;
+use Hough\Promise\PromiseInterface;
+use Hough\Psr7;
+use Hough\Psr7\FnStream;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 
 class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase

@@ -1,13 +1,13 @@
 <?php
-namespace GuzzleHttp\Tests\CookieJar;
+namespace Hough\Tests\CookieJar;
 
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Hough\Guzzle6\Cookie\CookieJar;
+use Hough\Guzzle6\Cookie\SetCookie;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
 
 /**
- * @covers GuzzleHttp\Cookie\CookieJar
+ * @covers Hough\Guzzle6\Cookie\CookieJar
  */
 class CookieJarTest extends \PHPUnit_Framework_TestCase
 {

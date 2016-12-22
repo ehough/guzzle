@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Tests\CookieJar;
+namespace Hough\Tests\CookieJar;
 
-use GuzzleHttp\Cookie\SessionCookieJar;
-use GuzzleHttp\Cookie\SetCookie;
+use Hough\Guzzle6\Cookie\SessionCookieJar;
+use Hough\Guzzle6\Cookie\SetCookie;
 
 /**
- * @covers GuzzleHttp\Cookie\SessionCookieJar
+ * @covers Hough\Guzzle6\Cookie\SessionCookieJar
  */
 class SessionCookieJarTest extends \PHPUnit_Framework_TestCase
 {

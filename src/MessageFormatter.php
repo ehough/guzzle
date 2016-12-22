@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
@@ -82,10 +82,10 @@ class MessageFormatter
                 $result = '';
                 switch ($matches[1]) {
                     case 'request':
-                        $result = Psr7\str($request);
+                        $result = \Hough\Psr7\str($request);
                         break;
                     case 'response':
-                        $result = $response ? Psr7\str($response) : '';
+                        $result = $response ? \Hough\Psr7\str($response) : '';
                         break;
                     case 'req_headers':
                         $result = trim($request->getMethod()

@@ -1,14 +1,13 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\MessageFormatter;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Guzzle6\MessageFormatter;
 
 /**
- * @covers GuzzleHttp\MessageFormatter
+ * @covers Hough\Guzzle6\MessageFormatter
  */
 class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,16 +41,16 @@ class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 
     public function formatProvider()
     {
-        $request = new Request('PUT', '/', ['x-test' => 'abc'], Psr7\stream_for('foo'));
-        $response = new Response(200, ['X-Baz' => 'Bar'], Psr7\stream_for('baz'));
+        $request = new Request('PUT', '/', ['x-test' => 'abc'], \Hough\Psr7\stream_for('foo'));
+        $response = new Response(200, ['X-Baz' => 'Bar'], \Hough\Psr7\stream_for('baz'));
         $err = new RequestException('Test', $request, $response);
 
         return [
-            ['{request}', [$request], Psr7\str($request)],
-            ['{response}', [$request, $response], Psr7\str($response)],
-            ['{request} {response}', [$request, $response], Psr7\str($request) . ' ' . Psr7\str($response)],
+            ['{request}', [$request], \Hough\Psr7\str($request)],
+            ['{response}', [$request, $response], \Hough\Psr7\str($response)],
+            ['{request} {response}', [$request, $response], \Hough\Psr7\str($request) . ' ' . \Hough\Psr7\str($response)],
             // Empty response yields no value
-            ['{request} {response}', [$request], Psr7\str($request) . ' '],
+            ['{request} {response}', [$request], \Hough\Psr7\str($request) . ' '],
             ['{req_headers}', [$request], "PUT / HTTP/1.1\r\nx-test: abc"],
             ['{res_headers}', [$request, $response], "HTTP/1.1 200 OK\r\nX-Baz: Bar"],
             ['{res_headers}', [$request], 'NULL'],

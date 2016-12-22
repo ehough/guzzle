@@ -1,14 +1,14 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Promise\Promise;
+use Hough\Guzzle6\Exception\ClientException;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Guzzle6\Pool;
+use Hough\Guzzle6\Client;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Promise\Promise;
 use Psr\Http\Message\RequestInterface;
 
 class PoolTest extends \PHPUnit_Framework_TestCase

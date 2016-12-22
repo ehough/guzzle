@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Promise\PromiseInterface;
+use Hough\Promise\RejectedPromise;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -92,7 +92,7 @@ class MockHandler implements \Countable
 
         $response = $response instanceof \Exception
             ? new RejectedPromise($response)
-            : \GuzzleHttp\Promise\promise_for($response);
+            : \Hough\Promise\promise_for($response);
 
         return $response->then(
             function ($value) use ($request, $options) {
@@ -140,7 +140,7 @@ class MockHandler implements \Countable
                 $this->queue[] = $value;
             } else {
                 throw new \InvalidArgumentException('Expected a response or '
-                    . 'exception. Found ' . \GuzzleHttp\describe_type($value));
+                    . 'exception. Found ' . \Hough\Guzzle6\describe_type($value));
             }
         }
     }

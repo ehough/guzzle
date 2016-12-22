@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Hough\Guzzle6\Cookie\CookieJar;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
 
 class HandlerStackTest extends \PHPUnit_Framework_TestCase
 {
@@ -92,13 +92,13 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->push(__CLASS__ . '::' . 'foo');
         $lines = explode("\n", (string) $builder);
         $this->assertContains("> 4) Name: 'a', Function: callable(", $lines[0]);
-        $this->assertContains("> 3) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[1]);
-        $this->assertContains("> 2) Name: '', Function: callable(['GuzzleHttp\\Tests\\HandlerStackTest', 'bar'])", $lines[2]);
-        $this->assertContains("> 1) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[3]);
+        $this->assertContains("> 3) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[1]);
+        $this->assertContains("> 2) Name: '', Function: callable(['Hough\\Tests\\Guzzle6\\HandlerStackTest', 'bar'])", $lines[2]);
+        $this->assertContains("> 1) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[3]);
         $this->assertContains("< 0) Handler: callable(", $lines[4]);
-        $this->assertContains("< 1) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[5]);
-        $this->assertContains("< 2) Name: '', Function: callable(['GuzzleHttp\\Tests\\HandlerStackTest', 'bar'])", $lines[6]);
-        $this->assertContains("< 3) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[7]);
+        $this->assertContains("< 1) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[5]);
+        $this->assertContains("< 2) Name: '', Function: callable(['Hough\\Tests\\Guzzle6\\HandlerStackTest', 'bar'])", $lines[6]);
+        $this->assertContains("< 3) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[7]);
         $this->assertContains("< 4) Name: 'a', Function: callable(", $lines[8]);
     }
 

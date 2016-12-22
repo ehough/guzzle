@@ -1,13 +1,13 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\RetryMiddleware;
+use Hough\Guzzle6\Client;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\Middleware;
+use Hough\Psr7;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Guzzle6\RetryMiddleware;
 
 class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
 {

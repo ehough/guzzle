@@ -1,16 +1,16 @@
 <?php
-namespace GuzzleHttp\Test\Handler;
+namespace Hough\Test\Guzzle6\Handler;
 
-use GuzzleHttp\Handler\CurlFactory;
-use GuzzleHttp\Handler\EasyHandle;
-use GuzzleHttp\Tests\Server;
-use GuzzleHttp\Handler;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Handler\CurlFactory;
+use Hough\Guzzle6\Handler\EasyHandle;
+use Hough\Tests\Guzzle6\Server;
+use Hough\Guzzle6\Handler;
+use Hough\Psr7;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @covers \GuzzleHttp\Handler\CurlFactory
+ * @covers \Hough\Guzzle6\Handler\CurlFactory
  */
 class CurlFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -427,7 +427,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage but attempting to rewind the request body failed
      */
     public function testFailsWhenCannotRewindRetryAfterNoResponse()
@@ -450,7 +450,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
 
         $fn = function ($r, $options) use (&$callHandler) {
             $callHandler = true;
-            return \GuzzleHttp\Promise\promise_for(new Psr7\Response());
+            return \Hough\Promise\promise_for(new Psr7\Response());
         };
 
         $bd = Psr7\FnStream::decorate(Psr7\stream_for('test'), [
@@ -469,7 +469,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage The cURL request was retried 3 times
      */
     public function testFailsWhenRetryMoreThanThreeTimes()
@@ -507,7 +507,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      */
     public function testCreatesConnectException()
     {
@@ -596,7 +596,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage An error was encountered during the on_headers event
      * @expectedExceptionMessage test
      */

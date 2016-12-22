@@ -1,10 +1,10 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\Handler\CurlMultiHandler;
-use GuzzleHttp\Handler\Proxy;
-use GuzzleHttp\Handler\StreamHandler;
+use Hough\Guzzle6\Handler\CurlHandler;
+use Hough\Guzzle6\Handler\CurlMultiHandler;
+use Hough\Guzzle6\Handler\Proxy;
+use Hough\Guzzle6\Handler\StreamHandler;
 
 /**
  * Expands a URI template
@@ -49,7 +49,14 @@ function describe_type($input)
             ob_start();
             var_dump($input);
             // normalize float vs double
-            return str_replace('double(', 'float(', rtrim(ob_get_clean()));
+            $toReturn = str_replace('double(', 'float(', rtrim(ob_get_clean()));
+
+            if (extension_loaded('xdebug') && (string) ini_get('xdebug.overload_var_dump') === '2') {
+
+                $toReturn = preg_replace('~^.+\n~', '', $toReturn);
+            }
+
+            return $toReturn;
     }
 }
 
@@ -116,7 +123,7 @@ function choose_handler()
             ? Proxy::wrapStreaming($handler, new StreamHandler())
             : new StreamHandler();
     } elseif (!$handler) {
-        throw new \RuntimeException('GuzzleHttp requires cURL, the '
+        throw new \RuntimeException('ehough/guzzle requires cURL, the '
             . 'allow_url_fopen ini setting, or a custom HTTP handler.');
     }
 
@@ -133,7 +140,7 @@ function default_user_agent()
     static $defaultAgent = '';
 
     if (!$defaultAgent) {
-        $defaultAgent = 'GuzzleHttp/' . Client::VERSION;
+        $defaultAgent = 'ehough/guzzle/' . Client::VERSION;
         if (extension_loaded('curl') && function_exists('curl_version')) {
             $defaultAgent .= ' curl/' . \curl_version()['version'];
         }

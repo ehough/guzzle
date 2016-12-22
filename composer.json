@@ -30,12 +30,12 @@
     "autoload": {
         "files": ["src/functions_include.php"],
         "psr-4": {
-            "GuzzleHttp\\": "src/"
+            "Hough\\Guzzle6\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "GuzzleHttp\\Tests\\": "tests/"
+            "Hough\\Tests\\Guzzle6\\": "tests/"
         }
     }
 }

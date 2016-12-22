@@ -1,9 +1,9 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Promise as P;
-use GuzzleHttp\Promise\Promise;
-use GuzzleHttp\Psr7;
+use Hough\Promise as P;
+use Hough\Promise\Promise;
+use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;
 
 /**

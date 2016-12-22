@@ -1,15 +1,15 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Uri;
+use Hough\Guzzle6\Client;
+use Hough\Guzzle6\Cookie\CookieJar;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Promise\PromiseInterface;
+use Hough\Psr7;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Psr7\Uri;
 use Psr\Http\Message\ResponseInterface;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
@@ -216,7 +216,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ClientException
+     * @expectedException \Hough\Guzzle6\Exception\ClientException
      */
     public function testThrowsHttpErrorsByDefault()
     {
@@ -228,7 +228,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage cookies must be an instance of GuzzleHttp\Cookie\CookieJarInterface
+     * @expectedExceptionMessage cookies must be an instance of Hough\Guzzle6\Cookie\CookieJarInterface
      */
     public function testValidatesCookies()
     {

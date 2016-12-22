@@ -1,18 +1,18 @@
 <?php
-namespace GuzzleHttp\Test\Handler;
+namespace Hough\Test\Guzzle6\Handler;
 
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Handler\StreamHandler;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\FnStream;
-use GuzzleHttp\Tests\Server;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Guzzle6\Handler\StreamHandler;
+use Hough\Psr7;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Psr7\FnStream;
+use Hough\Tests\Guzzle6\Server;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @covers \GuzzleHttp\Handler\StreamHandler
+ * @covers \Hough\Guzzle6\Handler\StreamHandler
  */
 class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +48,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      */
     public function testAddsErrorToResponse()
     {
@@ -258,7 +258,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      * @expectedExceptionMessage Connection refused
      */
     public function testAddsProxy()
@@ -293,7 +293,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage SSL CA bundle not found: /does/not/exist
      */
     public function testVerifiesVerifyIsValidIfPath()
@@ -307,7 +307,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage SSL certificate not found: /does/not/exist
      */
     public function testVerifiesCertIfValidPath()
@@ -317,7 +317,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testVerifyCanBeSetToPath()
     {
-        $path = $path = \GuzzleHttp\default_ca_bundle();
+        $path = $path = \Hough\Guzzle6\default_ca_bundle();
         $res = $this->getSendResult(['verify' => $path]);
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertEquals(true, $opts['ssl']['verify_peer']);
@@ -328,7 +328,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testUsesSystemDefaultBundle()
     {
-        $path = $path = \GuzzleHttp\default_ca_bundle();
+        $path = $path = \Hough\Guzzle6\default_ca_bundle();
         $res = $this->getSendResult(['verify' => true]);
         $opts = stream_context_get_options($res->getBody()->detach());
         if (PHP_VERSION_ID < 50600) {
@@ -515,7 +515,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage An error was encountered during the on_headers event
      * @expectedExceptionMessage test
      */

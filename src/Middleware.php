@@ -1,10 +1,10 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Cookie\CookieJarInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\Psr7;
+use Hough\Guzzle6\Cookie\CookieJarInterface;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Promise\RejectedPromise;
+use Hough\Psr7;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -29,7 +29,7 @@ final class Middleware
                 if (empty($options['cookies'])) {
                     return $handler($request, $options);
                 } elseif (!($options['cookies'] instanceof CookieJarInterface)) {
-                    throw new \InvalidArgumentException('cookies must be an instance of GuzzleHttp\Cookie\CookieJarInterface');
+                    throw new \InvalidArgumentException('cookies must be an instance of Hough\Guzzle6\Cookie\CookieJarInterface');
                 }
                 $cookieJar = $options['cookies'];
                 $request = $cookieJar->withCookieHeader($request);
@@ -198,7 +198,7 @@ final class Middleware
                             : null;
                         $message = $formatter->format($request, $response, $reason);
                         $logger->notice($message);
-                        return \GuzzleHttp\Promise\rejection_for($reason);
+                        return \Hough\Promise\rejection_for($reason);
                     }
                 );
             };

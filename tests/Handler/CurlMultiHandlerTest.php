@@ -1,10 +1,10 @@
 <?php
-namespace GuzzleHttp\Tests\Handler;
+namespace Hough\Tests\Handler;
 
-use GuzzleHttp\Handler\CurlMultiHandler;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Tests\Server;
+use Hough\Guzzle6\Handler\CurlMultiHandler;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Tests\Guzzle6\Server;
 
 class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,7 +18,7 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      * @expectedExceptionMessage cURL error
      */
     public function testCreatesExceptions()
