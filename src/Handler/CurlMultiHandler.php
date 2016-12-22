@@ -21,8 +21,8 @@ class CurlMultiHandler
     private $factory;
     private $selectTimeout;
     private $active;
-    private $handles = [];
-    private $delays = [];
+    private $handles = array();
+    private $delays = array();
 
     /**
      * This handler accepts the following options:

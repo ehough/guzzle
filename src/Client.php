@@ -288,7 +288,7 @@ class Client implements ClientInterface
      */
     private function applyOptions(RequestInterface $request, array &$options)
     {
-        $modify = [];
+        $modify = array();
 
         if (isset($options['form_params'])) {
             if (isset($options['multipart'])) {
@@ -383,7 +383,7 @@ class Client implements ClientInterface
         // Merge in conditional headers if they are not present.
         if (isset($options['_conditional'])) {
             // Build up the changes so it's in a single clone of the message.
-            $modify = [];
+            $modify = array();
             foreach ($options['_conditional'] as $k => $v) {
                 if (!$request->hasHeader($k)) {
                     $modify['set_headers'][$k] = $v;

@@ -261,7 +261,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::flush();
         Server::enqueue([new Psr7\Response()]);
         $a = new Handler\CurlMultiHandler();
-        $called = [];
+        $called = array();
         $request = new Psr7\Request('HEAD', Server::$url);
         $response = $a($request, [
             'progress' => function () use (&$called) {

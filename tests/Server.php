@@ -48,7 +48,7 @@ class Server
      */
     public static function enqueue($responses)
     {
-        $data = [];
+        $data = array();
         foreach ((array) $responses as $response) {
             if (!($response instanceof ResponseInterface)) {
                 throw new \Exception('Invalid response given.');

@@ -14,7 +14,7 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
     public function testRetriesWhenDeciderReturnsTrue()
     {
         $delayCalls = 0;
-        $calls = [];
+        $calls = array();
         $decider = function ($retries, $request, $response, $error) use (&$calls) {
             $calls[] = func_get_args();
             return count($calls) < 3;
@@ -48,7 +48,7 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testCanRetryExceptions()
     {
-        $calls = [];
+        $calls = array();
         $decider = function ($retries, $request, $response, $error) use (&$calls) {
             $calls[] = func_get_args();
             return $error instanceof \Exception;

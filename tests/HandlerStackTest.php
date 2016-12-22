@@ -167,7 +167,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
 
     private function getFunctions()
     {
-        $calls = [];
+        $calls = array();
 
         $a = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {

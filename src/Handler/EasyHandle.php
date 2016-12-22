@@ -20,7 +20,7 @@ final class EasyHandle
     public $sink;
 
     /** @var array Received HTTP headers so far */
-    public $headers = [];
+    public $headers = array();
 
     /** @var ResponseInterface Received response (if any) */
     public $response;
@@ -29,7 +29,7 @@ final class EasyHandle
     public $request;
 
     /** @var array Request options */
-    public $options = [];
+    public $options = array();
 
     /** @var int cURL error number (if any) */
     public $errno = 0;

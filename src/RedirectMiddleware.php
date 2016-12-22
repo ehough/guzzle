@@ -158,7 +158,7 @@ class RedirectMiddleware
         ResponseInterface $response
     ) {
         // Request modifications to apply.
-        $modify = [];
+        $modify = array();
         $protocols = $options['allow_redirects']['protocols'];
 
         // Use a GET request if this is an entity enclosing request and we are

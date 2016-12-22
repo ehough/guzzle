@@ -13,7 +13,7 @@ class HandlerStack
     private $handler;
 
     /** @var array */
-    private $stack = [];
+    private $stack = array();
 
     /** @var callable|null */
     private $cached;
@@ -75,7 +75,7 @@ class HandlerStack
     public function __toString()
     {
         $depth = 0;
-        $stack = [];
+        $stack = array();
         if ($this->handler) {
             $stack[] = "0) Handler: " . $this->debugCallable($this->handler);
         }

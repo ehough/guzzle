@@ -385,7 +385,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testEmitsProgressInformation()
     {
-        $called = [];
+        $called = array();
         $this->queueRes();
         $this->getSendResult([
             'progress' => function () use (&$called) {
@@ -399,7 +399,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testEmitsProgressInformationAndDebugInformation()
     {
-        $called = [];
+        $called = array();
         $this->queueRes();
         $buffer = fopen('php://memory', 'w+');
         $this->getSendResult([

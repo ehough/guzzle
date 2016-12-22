@@ -17,7 +17,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class StreamHandler
 {
-    private $lastHeaders = [];
+    private $lastHeaders = array();
 
     /**
      * Sends an HTTP request.
@@ -97,7 +97,7 @@ class StreamHandler
         $startTime
     ) {
         $hdrs = $this->lastHeaders;
-        $this->lastHeaders = [];
+        $this->lastHeaders = array();
         $parts = explode(' ', array_shift($hdrs), 3);
         $ver = explode('/', $parts[0])[1];
         $status = $parts[1];
@@ -275,7 +275,7 @@ class StreamHandler
             $options['verify'] = true;
         }
 
-        $params = [];
+        $params = array();
         $context = $this->getDefaultContext($request, $options);
 
         if (isset($options['on_headers']) && !is_callable($options['on_headers'])) {

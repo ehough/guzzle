@@ -39,7 +39,7 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
         $response = new Response(200);
         Server::enqueue(array_fill_keys(range(0, 10), $response));
         $a = new CurlMultiHandler();
-        $responses = [];
+        $responses = array();
         for ($i = 0; $i < 10; $i++) {
             $response = $a(new Request('GET', Server::$url), []);
             $response->cancel();

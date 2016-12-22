@@ -47,7 +47,7 @@ class FileCookieJar extends CookieJar
      */
     public function save($filename)
     {
-        $json = [];
+        $json = array();
         foreach ($this as $cookie) {
             /** @var SetCookie $cookie */
             if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {

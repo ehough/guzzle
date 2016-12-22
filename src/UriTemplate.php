@@ -60,7 +60,7 @@ class UriTemplate
      */
     private function parseExpression($expression)
     {
-        $result = [];
+        $result = array();
 
         if (isset(self::$operatorHash[$expression[0]])) {
             $result['operator'] = $expression[0];
@@ -71,7 +71,7 @@ class UriTemplate
 
         foreach (explode(',', $expression) as $value) {
             $value = trim($value);
-            $varspec = [];
+            $varspec = array();
             if ($colonPos = strpos($value, ':')) {
                 $varspec['value'] = substr($value, 0, $colonPos);
                 $varspec['modifier'] = ':';
@@ -100,7 +100,7 @@ class UriTemplate
     {
         static $rfc1738to3986 = ['+' => '%20', '%7e' => '~'];
 
-        $replacements = [];
+        $replacements = array();
         $parsed = self::parseExpression($matches[1]);
         $prefix = self::$operatorHash[$parsed['operator']]['prefix'];
         $joiner = self::$operatorHash[$parsed['operator']]['joiner'];
@@ -119,7 +119,7 @@ class UriTemplate
             if (is_array($variable)) {
 
                 $isAssoc = $this->isAssoc($variable);
-                $kvp = [];
+                $kvp = array();
                 foreach ($variable as $key => $var) {
 
                     if ($isAssoc) {

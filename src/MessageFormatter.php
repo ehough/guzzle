@@ -69,7 +69,7 @@ class MessageFormatter
         ResponseInterface $response = null,
         \Exception $error = null
     ) {
-        $cache = [];
+        $cache = array();
 
         return preg_replace_callback(
             '/{\s*([A-Za-z_\-\.0-9]+)\s*}/',

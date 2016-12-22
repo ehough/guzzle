@@ -46,7 +46,7 @@ class Pool implements PromisorInterface
             $opts = $config['options'];
             unset($config['options']);
         } else {
-            $opts = [];
+            $opts = array();
         }
 
         $iterable = \Hough\Promise\iter_for($requests);
@@ -82,7 +82,7 @@ class Pool implements PromisorInterface
         $requests,
         array $options = []
     ) {
-        $res = [];
+        $res = array();
         self::cmpCallback($options, 'fulfilled', $res);
         self::cmpCallback($options, 'rejected', $res);
         $pool = new static($client, $requests, $options);

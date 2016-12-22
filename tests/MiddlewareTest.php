@@ -100,7 +100,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testTracksHistoryForFailures()
     {
-        $container = [];
+        $container = array();
         $m = Middleware::history($container);
         $request = new Request('GET', 'http://foo.com');
         $h = new MockHandler([new RequestException('error', $request)]);
@@ -113,7 +113,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testTapsBeforeAndAfter()
     {
-        $calls = [];
+        $calls = array();
         $m = function ($handler) use (&$calls) {
             return function ($request, $options) use ($handler, &$calls) {
                 $calls[] = '2';

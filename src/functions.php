@@ -69,7 +69,7 @@ function describe_type($input)
  */
 function headers_from_lines($lines)
 {
-    $headers = [];
+    $headers = array();
 
     foreach ($lines as $line) {
         $parts = explode(':', $line, 2);
@@ -230,7 +230,7 @@ EOT
  */
 function normalize_header_keys(array $headers)
 {
-    $result = [];
+    $result = array();
     foreach (array_keys($headers) as $key) {
         $result[strtolower($key)] = $key;
     }

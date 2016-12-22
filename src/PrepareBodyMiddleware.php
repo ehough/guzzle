@@ -42,7 +42,7 @@ class PrepareBodyMiddleware
             return $fn($request, $options);
         }
 
-        $modify = [];
+        $modify = array();
 
         // Add a default content-type if possible.
         if (!$request->hasHeader('Content-Type')) {

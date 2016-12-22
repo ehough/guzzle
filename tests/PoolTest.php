@@ -57,7 +57,7 @@ class PoolTest extends \PHPUnit_Framework_TestCase
 
     public function testUsesRequestOptions()
     {
-        $h = [];
+        $h = array();
         $handler = new MockHandler([
             function (RequestInterface $request) use (&$h) {
                 $h[] = $request;
@@ -74,7 +74,7 @@ class PoolTest extends \PHPUnit_Framework_TestCase
 
     public function testCanProvideCallablesThatReturnResponses()
     {
-        $h = [];
+        $h = array();
         $handler = new MockHandler([
             function (RequestInterface $request) use (&$h) {
                 $h[] = $request;
@@ -82,7 +82,7 @@ class PoolTest extends \PHPUnit_Framework_TestCase
             }
         ]);
         $c = new Client(['handler' => $handler]);
-        $optHistory = [];
+        $optHistory = array();
         $fn = function (array $opts) use (&$optHistory, $c) {
             $optHistory = $opts;
             return $c->request('GET', 'http://example.com', $opts);
@@ -143,7 +143,7 @@ class PoolTest extends \PHPUnit_Framework_TestCase
         $r3 = new Promise(function () use (&$r3) { $r3->resolve(new Response()); });
         $handler = new MockHandler([$r1, $r2, $r3]);
         $c = new Client(['handler' => $handler]);
-        $keys = [];
+        $keys = array();
         $requests = [
             'request_1' => new Request('GET', 'http://example.com'),
             'request_2' => new Request('GET', 'http://example.com'),
@@ -160,7 +160,7 @@ class PoolTest extends \PHPUnit_Framework_TestCase
 
     private function getClient($total = 1)
     {
-        $queue = [];
+        $queue = array();
         for ($i = 0; $i < $total; $i++) {
             $queue[] = new Response();
         }
