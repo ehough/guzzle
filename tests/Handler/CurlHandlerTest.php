@@ -13,7 +13,7 @@ use Hough\Tests\Guzzle6\Server;
  */
 class CurlHandlerTest extends \PHPUnit_Framework_TestCase
 {
-    protected function getHandler($options = [])
+    protected function getHandler($options = array())
     {
         return new CurlHandler($options);
     }

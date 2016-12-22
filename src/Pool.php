@@ -33,7 +33,7 @@ class Pool implements PromisorInterface
     public function __construct(
         ClientInterface $client,
         $requests,
-        array $config = []
+        array $config = array()
     ) {
         // Backwards compatibility.
         if (isset($config['pool_size'])) {
@@ -80,7 +80,7 @@ class Pool implements PromisorInterface
     public static function batch(
         ClientInterface $client,
         $requests,
-        array $options = []
+        array $options = array()
     ) {
         $res = array();
         self::cmpCallback($options, 'fulfilled', $res);

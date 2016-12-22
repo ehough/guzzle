@@ -29,7 +29,7 @@ final class TransferStats
         ResponseInterface $response = null,
         $transferTime = null,
         $handlerErrorData = null,
-        $handlerStats = []
+        $handlerStats = array()
     ) {
         $this->request = $request;
         $this->response = $response;

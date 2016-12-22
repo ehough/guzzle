@@ -9,18 +9,18 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @method ResponseInterface get(string|UriInterface $uri, array $options = [])
- * @method ResponseInterface head(string|UriInterface $uri, array $options = [])
- * @method ResponseInterface put(string|UriInterface $uri, array $options = [])
- * @method ResponseInterface post(string|UriInterface $uri, array $options = [])
- * @method ResponseInterface patch(string|UriInterface $uri, array $options = [])
- * @method ResponseInterface delete(string|UriInterface $uri, array $options = [])
- * @method Promise\PromiseInterface getAsync(string|UriInterface $uri, array $options = [])
- * @method Promise\PromiseInterface headAsync(string|UriInterface $uri, array $options = [])
- * @method Promise\PromiseInterface putAsync(string|UriInterface $uri, array $options = [])
- * @method Promise\PromiseInterface postAsync(string|UriInterface $uri, array $options = [])
- * @method Promise\PromiseInterface patchAsync(string|UriInterface $uri, array $options = [])
- * @method Promise\PromiseInterface deleteAsync(string|UriInterface $uri, array $options = [])
+ * @method ResponseInterface get(string|UriInterface $uri, array $options = array())
+ * @method ResponseInterface head(string|UriInterface $uri, array $options = array())
+ * @method ResponseInterface put(string|UriInterface $uri, array $options = array())
+ * @method ResponseInterface post(string|UriInterface $uri, array $options = array())
+ * @method ResponseInterface patch(string|UriInterface $uri, array $options = array())
+ * @method ResponseInterface delete(string|UriInterface $uri, array $options = array())
+ * @method Promise\PromiseInterface getAsync(string|UriInterface $uri, array $options = array())
+ * @method Promise\PromiseInterface headAsync(string|UriInterface $uri, array $options = array())
+ * @method Promise\PromiseInterface putAsync(string|UriInterface $uri, array $options = array())
+ * @method Promise\PromiseInterface postAsync(string|UriInterface $uri, array $options = array())
+ * @method Promise\PromiseInterface patchAsync(string|UriInterface $uri, array $options = array())
+ * @method Promise\PromiseInterface deleteAsync(string|UriInterface $uri, array $options = array())
  */
 class Client implements ClientInterface
 {
@@ -57,9 +57,9 @@ class Client implements ClientInterface
      *
      * @param array $config Client configuration settings.
      *
-     * @see \Hough\RequestOptions for a list of available request options.
+     * @see \Hough\Guzzle6\RequestOptions for a list of available request options.
      */
-    public function __construct(array $config = [])
+    public function __construct(array $config = array())
     {
         if (!isset($config['handler'])) {
             $config['handler'] = HandlerStack::create();
@@ -80,14 +80,14 @@ class Client implements ClientInterface
         }
 
         $uri = $args[0];
-        $opts = isset($args[1]) ? $args[1] : [];
+        $opts = isset($args[1]) ? $args[1] : array();
 
         return substr($method, -5) === 'Async'
             ? $this->requestAsync(substr($method, 0, -5), $uri, $opts)
             : $this->request($method, $uri, $opts);
     }
 
-    public function sendAsync(RequestInterface $request, array $options = [])
+    public function sendAsync(RequestInterface $request, array $options = array())
     {
         // Merge the base URI into the request URI if needed.
         $options = $this->prepareDefaults($options);
@@ -98,17 +98,17 @@ class Client implements ClientInterface
         );
     }
 
-    public function send(RequestInterface $request, array $options = [])
+    public function send(RequestInterface $request, array $options = array())
     {
         $options[RequestOptions::SYNCHRONOUS] = true;
         return $this->sendAsync($request, $options)->wait();
     }
 
-    public function requestAsync($method, $uri = '', array $options = [])
+    public function requestAsync($method, $uri = '', array $options = array())
     {
         $options = $this->prepareDefaults($options);
         // Remove request modifying parameter because it can be done up-front.
-        $headers = isset($options['headers']) ? $options['headers'] : [];
+        $headers = isset($options['headers']) ? $options['headers'] : array();
         $body = isset($options['body']) ? $options['body'] : null;
         $version = isset($options['version']) ? $options['version'] : '1.1';
         // Merge the URI into the base URI.
@@ -123,7 +123,7 @@ class Client implements ClientInterface
         return $this->transfer($request, $options);
     }
 
-    public function request($method, $uri = '', array $options = [])
+    public function request($method, $uri = '', array $options = array())
     {
         $options[RequestOptions::SYNCHRONOUS] = true;
         return $this->requestAsync($method, $uri, $options)->wait();
@@ -155,13 +155,13 @@ class Client implements ClientInterface
      */
     private function configureDefaults(array $config)
     {
-        $defaults = [
+        $defaults = array(
             'allow_redirects' => RedirectMiddleware::$defaultSettings,
             'http_errors'     => true,
             'decode_content'  => true,
             'verify'          => true,
             'cookies'         => false
-        ];
+        );
 
         // Use the standard Linux HTTP_PROXY and HTTPS_PROXY if set.
 
@@ -189,7 +189,7 @@ class Client implements ClientInterface
 
         // Add the default user-agent header.
         if (!isset($this->config['headers'])) {
-            $this->config['headers'] = ['User-Agent' => default_user_agent()];
+            $this->config['headers'] = array('User-Agent' => default_user_agent());
         } else {
             // Add the User-Agent header if one was not already set.
             foreach (array_keys($this->config['headers']) as $name) {

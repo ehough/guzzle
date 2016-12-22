@@ -222,7 +222,7 @@ class Logger implements LoggerInterface
     use LoggerTrait;
     public $output;
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = array())
     {
         $this->output .= "[{$level}] {$message}\n";
     }

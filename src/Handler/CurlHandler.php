@@ -23,7 +23,7 @@ class CurlHandler
      *
      * @param array $options Array of options to use with the handler
      */
-    public function __construct(array $options = [])
+    public function __construct(array $options = array())
     {
         $this->factory = isset($options['handle_factory'])
             ? $options['handle_factory']

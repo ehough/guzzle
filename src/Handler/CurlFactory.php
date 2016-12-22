@@ -147,10 +147,10 @@ class CurlFactory implements CurlFactoryInterface
         CurlFactoryInterface $factory
     ) {
         // Get error information and release the handle to the factory.
-        $ctx = [
+        $ctx = array(
             'errno' => $easy->errno,
             'error' => curl_error($easy->handle),
-        ] + curl_getinfo($easy->handle);
+        ) + curl_getinfo($easy->handle);
         $factory->release($easy);
 
         // Retry when nothing is present or when curl failed to rewind.
@@ -165,13 +165,13 @@ class CurlFactory implements CurlFactoryInterface
 
     private static function createRejection(EasyHandle $easy, array $ctx)
     {
-        static $connectionErrors = [
+        static $connectionErrors = array(
             CURLE_OPERATION_TIMEOUTED  => true,
             CURLE_COULDNT_RESOLVE_HOST => true,
             CURLE_COULDNT_CONNECT      => true,
             CURLE_SSL_CONNECT_ERROR    => true,
             CURLE_GOT_NOTHING          => true,
-        ];
+        );
 
         // If an exception was encountered during the onHeaders event, then
         // return a rejected promise that wraps that exception.
@@ -204,14 +204,14 @@ class CurlFactory implements CurlFactoryInterface
 
     private function getDefaultConf(EasyHandle $easy)
     {
-        $conf = [
+        $conf = array(
             '_headers'             => $easy->request->getHeaders(),
             CURLOPT_CUSTOMREQUEST  => $easy->request->getMethod(),
             CURLOPT_URL            => (string) $easy->request->getUri()->withFragment(''),
             CURLOPT_RETURNTRANSFER => false,
             CURLOPT_HEADER         => false,
             CURLOPT_CONNECTTIMEOUT => 150,
-        ];
+        );
 
         if (defined('CURLOPT_PROTOCOLS')) {
             $conf[CURLOPT_PROTOCOLS] = CURLPROTO_HTTP | CURLPROTO_HTTPS;
@@ -548,7 +548,7 @@ class CurlFactory implements CurlFactoryInterface
                 }
             } elseif ($startingResponse) {
                 $startingResponse = false;
-                $easy->headers = [$value];
+                $easy->headers = array($value);
             } else {
                 $easy->headers[] = $value;
             }
