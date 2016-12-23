@@ -1,35 +1,35 @@
 <?php
-namespace GuzzleHttp\Tests\Handler;
+namespace Hough\Tests\Handler;
 
-use GuzzleHttp\Handler\CurlMultiHandler;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Tests\Server;
+use Hough\Guzzle6\Handler\CurlMultiHandler;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Tests\Guzzle6\Server;
 
 class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
 {
     public function testSendsRequest()
     {
-        Server::enqueue([new Response()]);
+        Server::enqueue(array(new Response()));
         $a = new CurlMultiHandler();
         $request = new Request('GET', Server::$url);
-        $response = $a($request, [])->wait();
+        $response = call_user_func($a, $request, array())->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      * @expectedExceptionMessage cURL error
      */
     public function testCreatesExceptions()
     {
         $a = new CurlMultiHandler();
-        $a(new Request('GET', 'http://localhost:123'), [])->wait();
+        call_user_func($a, new Request('GET', 'http://localhost:123'), array())->wait();
     }
 
     public function testCanSetSelectTimeout()
     {
-        $a = new CurlMultiHandler(['select_timeout' => 2]);
+        $a = new CurlMultiHandler(array('select_timeout' => 2));
         $this->assertEquals(2, $this->readAttribute($a, 'selectTimeout'));
     }
 
@@ -39,9 +39,9 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
         $response = new Response(200);
         Server::enqueue(array_fill_keys(range(0, 10), $response));
         $a = new CurlMultiHandler();
-        $responses = [];
+        $responses = array();
         for ($i = 0; $i < 10; $i++) {
-            $response = $a(new Request('GET', Server::$url), []);
+            $response = call_user_func($a, new Request('GET', Server::$url), array());
             $response->cancel();
             $responses[] = $response;
         }
@@ -50,9 +50,9 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
     public function testCannotCancelFinished()
     {
         Server::flush();
-        Server::enqueue([new Response(200)]);
+        Server::enqueue(array(new Response(200)));
         $a = new CurlMultiHandler();
-        $response = $a(new Request('GET', Server::$url), []);
+        $response = call_user_func($a, new Request('GET', Server::$url), array());
         $response->wait();
         $response->cancel();
     }
@@ -60,10 +60,10 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
     public function testDelaysConcurrently()
     {
         Server::flush();
-        Server::enqueue([new Response()]);
+        Server::enqueue(array(new Response()));
         $a = new CurlMultiHandler();
         $expected = microtime(true) + (100 / 1000);
-        $response = $a(new Request('GET', Server::$url), ['delay' => 100]);
+        $response = call_user_func($a, new Request('GET', Server::$url), array('delay' => 100));
         $response->wait();
         $this->assertGreaterThanOrEqual($expected, microtime(true));
     }

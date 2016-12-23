@@ -1,35 +1,37 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\RetryMiddleware;
+use Hough\Guzzle6\Client;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\Middleware;
+use Hough\Psr7;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Guzzle6\RetryMiddleware;
 
 class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetriesWhenDeciderReturnsTrue()
     {
         $delayCalls = 0;
-        $calls = [];
+        $calls = array();
         $decider = function ($retries, $request, $response, $error) use (&$calls) {
             $calls[] = func_get_args();
             return count($calls) < 3;
         };
-        $delay = function ($retries, $response) use (&$delayCalls) {
+        $assertEquals = array($this, 'assertEquals');
+        $assertInstanceOf = array($this, 'assertInstanceOf');
+        $delay = function ($retries, $response) use (&$delayCalls, $assertEquals, $assertInstanceOf) {
             $delayCalls++;
-            $this->assertEquals($retries, $delayCalls);
-            $this->assertInstanceOf(Response::class, $response);
+            call_user_func($assertEquals, $retries, $delayCalls);
+            call_user_func($assertInstanceOf, '\Hough\Psr7\Response', $response);
             return 1;
         };
         $m = Middleware::retry($decider, $delay);
-        $h = new MockHandler([new Response(200), new Response(201), new Response(202)]);
-        $f = $m($h);
-        $c = new Client(['handler' => $f]);
-        $p = $c->sendAsync(new Request('GET', 'http://test.com'), []);
+        $h = new MockHandler(array(new Response(200), new Response(201), new Response(202)));
+        $f = call_user_func($m, $h);
+        $c = new Client(array('handler' => $f));
+        $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $p->wait();
         $this->assertCount(3, $calls);
         $this->assertEquals(2, $delayCalls);
@@ -40,30 +42,30 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $decider = function () { return false; };
         $m = Middleware::retry($decider);
-        $h = new MockHandler([new Response(200)]);
-        $c = new Client(['handler' => $m($h)]);
-        $p = $c->sendAsync(new Request('GET', 'http://test.com'), []);
+        $h = new MockHandler(array(new Response(200)));
+        $c = new Client(array('handler' => call_user_func($m, $h)));
+        $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $this->assertEquals(200, $p->wait()->getStatusCode());
     }
 
     public function testCanRetryExceptions()
     {
-        $calls = [];
+        $calls = array();
         $decider = function ($retries, $request, $response, $error) use (&$calls) {
             $calls[] = func_get_args();
             return $error instanceof \Exception;
         };
         $m = Middleware::retry($decider);
-        $h = new MockHandler([new \Exception(), new Response(201)]);
-        $c = new Client(['handler' => $m($h)]);
-        $p = $c->sendAsync(new Request('GET', 'http://test.com'), []);
+        $h = new MockHandler(array(new \Exception(), new Response(201)));
+        $c = new Client(array('handler' => call_user_func($m, $h)));
+        $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $this->assertEquals(201, $p->wait()->getStatusCode());
         $this->assertCount(2, $calls);
         $this->assertEquals(0, $calls[0][0]);
         $this->assertNull($calls[0][2]);
         $this->assertInstanceOf('Exception', $calls[0][3]);
         $this->assertEquals(1, $calls[1][0]);
-        $this->assertInstanceOf(Response::class, $calls[1][2]);
+        $this->assertInstanceOf('\Hough\Psr7\Response', $calls[1][2]);
         $this->assertNull($calls[1][3]);
     }
 

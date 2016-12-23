@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Tests\CookieJar;
+namespace Hough\Tests\CookieJar;
 
-use GuzzleHttp\Cookie\SessionCookieJar;
-use GuzzleHttp\Cookie\SetCookie;
+use Hough\Guzzle6\Cookie\SessionCookieJar;
+use Hough\Guzzle6\Cookie\SetCookie;
 
 /**
- * @covers GuzzleHttp\Cookie\SessionCookieJar
+ * @covers \Hough\Guzzle6\Cookie\SessionCookieJar
  */
 class SessionCookieJarTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +32,7 @@ class SessionCookieJarTest extends \PHPUnit_Framework_TestCase
     public function testLoadsFromSession()
     {
         $jar = new SessionCookieJar($this->sessionVar);
-        $this->assertEquals([], $jar->getIterator()->getArrayCopy());
+        $this->assertEquals(array(), $jar->getIterator()->getArrayCopy());
         unset($_SESSION[$this->sessionVar]);
     }
 
@@ -42,23 +42,23 @@ class SessionCookieJarTest extends \PHPUnit_Framework_TestCase
     public function testPersistsToSession($testSaveSessionCookie = false)
     {
         $jar = new SessionCookieJar($this->sessionVar, $testSaveSessionCookie);
-        $jar->setCookie(new SetCookie([
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'foo',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
             'Expires' => time() + 1000
-        ]));
-        $jar->setCookie(new SetCookie([
+        )));
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'baz',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
             'Expires' => time() + 1000
-        ]));
-        $jar->setCookie(new SetCookie([
+        )));
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'boo',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
-        ]));
+        )));
 
         $this->assertEquals(3, count($jar));
         unset($jar);

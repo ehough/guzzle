@@ -1,8 +1,8 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Exception\GuzzleException;
+use Hough\Promise\PromiseInterface;
+use Hough\Guzzle6\Exception\GuzzleException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -24,7 +24,7 @@ interface ClientInterface
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function send(RequestInterface $request, array $options = []);
+    public function send(RequestInterface $request, array $options = array());
 
     /**
      * Asynchronously send an HTTP request.
@@ -35,7 +35,7 @@ interface ClientInterface
      *
      * @return PromiseInterface
      */
-    public function sendAsync(RequestInterface $request, array $options = []);
+    public function sendAsync(RequestInterface $request, array $options = array());
 
     /**
      * Create and send an HTTP request.
@@ -51,7 +51,7 @@ interface ClientInterface
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function request($method, $uri, array $options = []);
+    public function request($method, $uri, array $options = array());
 
     /**
      * Create and send an asynchronous HTTP request.
@@ -67,7 +67,7 @@ interface ClientInterface
      *
      * @return PromiseInterface
      */
-    public function requestAsync($method, $uri, array $options = []);
+    public function requestAsync($method, $uri, array $options = array());
 
     /**
      * Get a client configuration option.

@@ -1,10 +1,10 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\Exception\TooManyRedirectsException;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
+use Hough\Guzzle6\Exception\BadResponseException;
+use Hough\Guzzle6\Exception\TooManyRedirectsException;
+use Hough\Promise\PromiseInterface;
+use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -13,19 +13,19 @@ use Psr\Http\Message\UriInterface;
  * Request redirect middleware.
  *
  * Apply this middleware like other middleware using
- * {@see GuzzleHttp\Middleware::redirect()}.
+ * {@see Hough\Guzzle6\Middleware::redirect()}.
  */
 class RedirectMiddleware
 {
     const HISTORY_HEADER = 'X-Guzzle-Redirect-History';
 
-    public static $defaultSettings = [
+    public static $defaultSettings = array(
         'max'             => 5,
-        'protocols'       => ['http', 'https'],
+        'protocols'       => array('http', 'https'),
         'strict'          => false,
         'referer'         => false,
         'track_redirects' => false,
-    ];
+    );
 
     /** @var callable  */
     private $nextHandler;
@@ -33,7 +33,7 @@ class RedirectMiddleware
     /**
      * @param callable $nextHandler Next handler to invoke.
      */
-    public function __construct(callable $nextHandler)
+    public function __construct($nextHandler)
     {
         $this->nextHandler = $nextHandler;
     }
@@ -49,7 +49,7 @@ class RedirectMiddleware
         $fn = $this->nextHandler;
 
         if (empty($options['allow_redirects'])) {
-            return $fn($request, $options);
+            return call_user_func($fn, $request, $options);
         }
 
         if ($options['allow_redirects'] === true) {
@@ -62,12 +62,13 @@ class RedirectMiddleware
         }
 
         if (empty($options['allow_redirects']['max'])) {
-            return $fn($request, $options);
+            return call_user_func($fn, $request, $options);
         }
 
-        return $fn($request, $options)
-            ->then(function (ResponseInterface $response) use ($request, $options) {
-                return $this->checkRedirect($request, $options, $response);
+        $checkRedirect = array($this, 'checkRedirect');
+        return call_user_func($fn, $request, $options)
+            ->then(function (ResponseInterface $response) use ($request, $options, $checkRedirect) {
+                return call_user_func($checkRedirect, $request, $options, $response);
             });
     }
 
@@ -102,7 +103,7 @@ class RedirectMiddleware
         }
 
         /** @var PromiseInterface|ResponseInterface $promise */
-        $promise = $this($nextRequest, $options);
+        $promise = call_user_func($this, $nextRequest, $options);
 
         // Add headers to be able to track history of redirects.
         if (!empty($options['allow_redirects']['track_redirects'])) {
@@ -117,14 +118,15 @@ class RedirectMiddleware
 
     private function withTracking(PromiseInterface $promise, $uri)
     {
+        $historyHeader = self::HISTORY_HEADER;
         return $promise->then(
-            function (ResponseInterface $response) use ($uri) {
+            function (ResponseInterface $response) use ($uri, $historyHeader) {
                 // Note that we are pushing to the front of the list as this
                 // would be an earlier response than what is currently present
                 // in the history header.
-                $header = $response->getHeader(self::HISTORY_HEADER);
+                $header = $response->getHeader($historyHeader);
                 array_unshift($header, $uri);
-                return $response->withHeader(self::HISTORY_HEADER, $header);
+                return $response->withHeader($historyHeader, $header);
             }
         );
     }
@@ -158,7 +160,7 @@ class RedirectMiddleware
         ResponseInterface $response
     ) {
         // Request modifications to apply.
-        $modify = [];
+        $modify = array();
         $protocols = $options['allow_redirects']['protocols'];
 
         // Use a GET request if this is an entity enclosing request and we are

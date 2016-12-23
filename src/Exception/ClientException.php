@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp\Exception;
+namespace Hough\Guzzle6\Exception;
 
 /**
  * Exception when a client error is encountered (4xx codes)

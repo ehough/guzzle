@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Tests\CookieJar;
+namespace Hough\Tests\CookieJar;
 
-use GuzzleHttp\Cookie\FileCookieJar;
-use GuzzleHttp\Cookie\SetCookie;
+use Hough\Guzzle6\Cookie\FileCookieJar;
+use Hough\Guzzle6\Cookie\SetCookie;
 
 /**
- * @covers GuzzleHttp\Cookie\FileCookieJar
+ * @covers \Hough\Guzzle6\Cookie\FileCookieJar
  */
 class FileCookieJarTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class FileCookieJarTest extends \PHPUnit_Framework_TestCase
     public function testLoadsFromFile()
     {
         $jar = new FileCookieJar($this->file);
-        $this->assertEquals([], $jar->getIterator()->getArrayCopy());
+        $this->assertEquals(array(), $jar->getIterator()->getArrayCopy());
         unlink($this->file);
     }
 
@@ -38,23 +38,23 @@ class FileCookieJarTest extends \PHPUnit_Framework_TestCase
     public function testPersistsToFile($testSaveSessionCookie = false)
     {
         $jar = new FileCookieJar($this->file, $testSaveSessionCookie);
-        $jar->setCookie(new SetCookie([
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'foo',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
             'Expires' => time() + 1000
-        ]));
-        $jar->setCookie(new SetCookie([
+        )));
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'baz',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
             'Expires' => time() + 1000
-        ]));
-        $jar->setCookie(new SetCookie([
+        )));
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'boo',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
-        ]));
+        )));
 
         $this->assertEquals(3, count($jar));
         unset($jar);

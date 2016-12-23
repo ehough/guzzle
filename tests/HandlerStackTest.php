@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Hough\Guzzle6\Cookie\CookieJar;
+use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
 
 class HandlerStackTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +13,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
     {
         $f = function () {};
         $m1 = function () {};
-        $h = new HandlerStack($f, [$m1]);
+        $h = new HandlerStack($f, array($m1));
         $this->assertTrue($h->hasHandler());
     }
 
@@ -43,9 +43,9 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->push($meths[3]);
         $builder->push($meths[4]);
         $composed = $builder->resolve();
-        $this->assertEquals('Hello - test123', $composed('test'));
+        $this->assertEquals('Hello - test123', call_user_func($composed, 'test'));
         $this->assertEquals(
-            [['a', 'test'], ['b', 'test1'], ['c', 'test12']],
+            array(array('a', 'test'), array('b', 'test1'), array('c', 'test12')),
             $meths[0]
         );
     }
@@ -59,9 +59,9 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->unshift($meths[3]);
         $builder->unshift($meths[4]);
         $composed = $builder->resolve();
-        $this->assertEquals('Hello - test321', $composed('test'));
+        $this->assertEquals('Hello - test321', call_user_func($composed, 'test'));
         $this->assertEquals(
-            [['c', 'test'], ['b', 'test3'], ['a', 'test32']],
+            array(array('c', 'test'), array('b', 'test3'), array('a', 'test32')),
             $meths[0]
         );
     }
@@ -78,7 +78,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->push($meths[2]);
         $builder->remove($meths[3]);
         $composed = $builder->resolve();
-        $this->assertEquals('Hello - test1131', $composed('test'));
+        $this->assertEquals('Hello - test1131', call_user_func($composed, 'test'));
     }
 
     public function testCanPrintMiddleware()
@@ -87,18 +87,18 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder = new HandlerStack();
         $builder->setHandler($meths[1]);
         $builder->push($meths[2], 'a');
-        $builder->push([__CLASS__, 'foo']);
-        $builder->push([$this, 'bar']);
+        $builder->push(array(__CLASS__, 'foo'));
+        $builder->push(array($this, 'bar'));
         $builder->push(__CLASS__ . '::' . 'foo');
         $lines = explode("\n", (string) $builder);
         $this->assertContains("> 4) Name: 'a', Function: callable(", $lines[0]);
-        $this->assertContains("> 3) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[1]);
-        $this->assertContains("> 2) Name: '', Function: callable(['GuzzleHttp\\Tests\\HandlerStackTest', 'bar'])", $lines[2]);
-        $this->assertContains("> 1) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[3]);
+        $this->assertContains("> 3) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[1]);
+        $this->assertContains("> 2) Name: '', Function: callable(['Hough\\Tests\\Guzzle6\\HandlerStackTest', 'bar'])", $lines[2]);
+        $this->assertContains("> 1) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[3]);
         $this->assertContains("< 0) Handler: callable(", $lines[4]);
-        $this->assertContains("< 1) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[5]);
-        $this->assertContains("< 2) Name: '', Function: callable(['GuzzleHttp\\Tests\\HandlerStackTest', 'bar'])", $lines[6]);
-        $this->assertContains("< 3) Name: '', Function: callable(GuzzleHttp\\Tests\\HandlerStackTest::foo)", $lines[7]);
+        $this->assertContains("< 1) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[5]);
+        $this->assertContains("< 2) Name: '', Function: callable(['Hough\\Tests\\Guzzle6\\HandlerStackTest', 'bar'])", $lines[6]);
+        $this->assertContains("< 3) Name: '', Function: callable(Hough\\Tests\\Guzzle6\\HandlerStackTest::foo)", $lines[7]);
         $this->assertContains("< 4) Name: 'a', Function: callable(", $lines[8]);
     }
 
@@ -145,20 +145,20 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
 
     public function testPicksUpCookiesFromRedirects()
     {
-        $mock = new MockHandler([
-            new Response(301, [
+        $mock = new MockHandler(array(
+            new Response(301, array(
                 'Location'   => 'http://foo.com/baz',
                 'Set-Cookie' => 'foo=bar; Domain=foo.com'
-            ]),
+            )),
             new Response(200)
-        ]);
+        ));
         $handler = HandlerStack::create($mock);
         $request = new Request('GET', 'http://foo.com/bar');
         $jar = new CookieJar();
-        $response = $handler($request, [
+        $response = call_user_func($handler, $request, array(
             'allow_redirects' => true,
             'cookies' => $jar
-        ])->wait();
+        ))->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $lastRequest = $mock->getLastRequest();
         $this->assertEquals('http://foo.com/baz', (string) $lastRequest->getUri());
@@ -167,26 +167,26 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
 
     private function getFunctions()
     {
-        $calls = [];
+        $calls = array();
 
-        $a = function (callable $next) use (&$calls) {
+        $a = function ($next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
-                $calls[] = ['a', $v];
-                return $next($v . '1');
+                $calls[] = array('a', $v);
+                return call_user_func($next, $v . '1');
             };
         };
 
-        $b = function (callable $next) use (&$calls) {
+        $b = function ($next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
-                $calls[] = ['b', $v];
-                return $next($v . '2');
+                $calls[] = array('b', $v);
+                return call_user_func($next, $v . '2');
             };
         };
 
-        $c = function (callable $next) use (&$calls) {
+        $c = function ($next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
-                $calls[] = ['c', $v];
-                return $next($v . '3');
+                $calls[] = array('c', $v);
+                return call_user_func($next, $v . '3');
             };
         };
 
@@ -194,7 +194,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
             return 'Hello - ' . $v;
         };
 
-        return [&$calls, $handler, $a, $b, $c];
+        return array(&$calls, $handler, $a, $b, $c);
     }
 
     public static function foo() {}

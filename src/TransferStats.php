@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,7 +29,7 @@ final class TransferStats
         ResponseInterface $response = null,
         $transferTime = null,
         $handlerErrorData = null,
-        $handlerStats = []
+        $handlerStats = array()
     ) {
         $this->request = $request;
         $this->response = $response;

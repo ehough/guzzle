@@ -1,9 +1,9 @@
 <?php
-namespace GuzzleHttp\Exception;
+namespace Hough\Guzzle6\Exception;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Promise\PromiseInterface;
+use Hough\Promise\PromiseInterface;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -25,7 +25,7 @@ class RequestException extends TransferException
         RequestInterface $request,
         ResponseInterface $response = null,
         \Exception $previous = null,
-        array $handlerContext = []
+        array $handlerContext = array()
     ) {
         // Set the code of the exception if the response is set and not future.
         $code = $response && !($response instanceof PromiseInterface)
@@ -66,7 +66,7 @@ class RequestException extends TransferException
         RequestInterface $request,
         ResponseInterface $response = null,
         \Exception $previous = null,
-        array $ctx = []
+        array $ctx = array()
     ) {
         if (!$response) {
             return new self(
@@ -81,10 +81,10 @@ class RequestException extends TransferException
         $level = (int) floor($response->getStatusCode() / 100);
         if ($level === 4) {
             $label = 'Client error';
-            $className = ClientException::class;
+            $className = '\Hough\Guzzle6\Exception\ClientException';
         } elseif ($level === 5) {
             $label = 'Server error';
-            $className = ServerException::class;
+            $className = '\Hough\Guzzle6\Exception\ServerException';
         } else {
             $label = 'Unsuccessful request';
             $className = __CLASS__;

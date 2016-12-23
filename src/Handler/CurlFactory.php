@@ -1,13 +1,13 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Promise\FulfilledPromise;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\LazyOpenStream;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Promise\FulfilledPromise;
+use Hough\Promise\RejectedPromise;
+use Hough\Psr7;
+use Hough\Psr7\LazyOpenStream;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -16,7 +16,7 @@ use Psr\Http\Message\RequestInterface;
 class CurlFactory implements CurlFactoryInterface
 {
     /** @var array */
-    private $handles = [];
+    private $handles = array();
 
     /** @var int Total number of idle handles to keep in cache */
     private $maxHandles;
@@ -75,8 +75,21 @@ class CurlFactory implements CurlFactoryInterface
             curl_setopt($resource, CURLOPT_READFUNCTION, null);
             curl_setopt($resource, CURLOPT_WRITEFUNCTION, null);
             curl_setopt($resource, CURLOPT_PROGRESSFUNCTION, null);
-            curl_reset($resource);
+            $this->curl_reset($resource);
             $this->handles[] = $resource;
+        }
+    }
+
+    private function curl_reset(&$resource)
+    {
+        if (function_exists('curl_reset')) {
+
+            curl_reset($resource);
+
+        } else {
+
+            //http://php.net/manual/en/function.curl-reset.php#119616
+            $resource = curl_init();
         }
     }
 
@@ -88,10 +101,10 @@ class CurlFactory implements CurlFactoryInterface
      * @param EasyHandle           $easy
      * @param CurlFactoryInterface $factory Dictates how the handle is released
      *
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \Hough\Promise\PromiseInterface
      */
     public static function finish(
-        callable $handler,
+        $handler,
         EasyHandle $easy,
         CurlFactoryInterface $factory
     ) {
@@ -129,15 +142,15 @@ class CurlFactory implements CurlFactoryInterface
     }
 
     private static function finishError(
-        callable $handler,
+        $handler,
         EasyHandle $easy,
         CurlFactoryInterface $factory
     ) {
         // Get error information and release the handle to the factory.
-        $ctx = [
+        $ctx = array(
             'errno' => $easy->errno,
             'error' => curl_error($easy->handle),
-        ] + curl_getinfo($easy->handle);
+        ) + curl_getinfo($easy->handle);
         $factory->release($easy);
 
         // Retry when nothing is present or when curl failed to rewind.
@@ -152,13 +165,13 @@ class CurlFactory implements CurlFactoryInterface
 
     private static function createRejection(EasyHandle $easy, array $ctx)
     {
-        static $connectionErrors = [
+        static $connectionErrors = array(
             CURLE_OPERATION_TIMEOUTED  => true,
             CURLE_COULDNT_RESOLVE_HOST => true,
             CURLE_COULDNT_CONNECT      => true,
             CURLE_SSL_CONNECT_ERROR    => true,
             CURLE_GOT_NOTHING          => true,
-        ];
+        );
 
         // If an exception was encountered during the onHeaders event, then
         // return a rejected promise that wraps that exception.
@@ -191,14 +204,14 @@ class CurlFactory implements CurlFactoryInterface
 
     private function getDefaultConf(EasyHandle $easy)
     {
-        $conf = [
+        $conf = array(
             '_headers'             => $easy->request->getHeaders(),
             CURLOPT_CUSTOMREQUEST  => $easy->request->getMethod(),
             CURLOPT_URL            => (string) $easy->request->getUri()->withFragment(''),
             CURLOPT_RETURNTRANSFER => false,
             CURLOPT_HEADER         => false,
             CURLOPT_CONNECTTIMEOUT => 150,
-        ];
+        );
 
         if (defined('CURLOPT_PROTOCOLS')) {
             $conf[CURLOPT_PROTOCOLS] = CURLPROTO_HTTP | CURLPROTO_HTTPS;
@@ -350,7 +363,7 @@ class CurlFactory implements CurlFactoryInterface
         if (isset($options['sink'])) {
             $sink = $options['sink'];
             if (!is_string($sink)) {
-                $sink = \GuzzleHttp\Psr7\stream_for($sink);
+                $sink = \Hough\Psr7\stream_for($sink);
             } elseif (!is_dir(dirname($sink))) {
                 // Ensure that the directory exists before failing in curl.
                 throw new \RuntimeException(sprintf(
@@ -396,7 +409,7 @@ class CurlFactory implements CurlFactoryInterface
                 if (isset($options['proxy'][$scheme])) {
                     $host = $easy->request->getUri()->getHost();
                     if (!isset($options['proxy']['no']) ||
-                        !\GuzzleHttp\is_host_in_noproxy($host, $options['proxy']['no'])
+                        !\Hough\Guzzle6\is_host_in_noproxy($host, $options['proxy']['no'])
                     ) {
                         $conf[CURLOPT_PROXY] = $options['proxy'][$scheme];
                     }
@@ -451,7 +464,7 @@ class CurlFactory implements CurlFactoryInterface
         }
 
         if (!empty($options['debug'])) {
-            $conf[CURLOPT_STDERR] = \GuzzleHttp\debug_resource($options['debug']);
+            $conf[CURLOPT_STDERR] = \Hough\Guzzle6\debug_resource($options['debug']);
             $conf[CURLOPT_VERBOSE] = true;
         }
     }
@@ -466,7 +479,7 @@ class CurlFactory implements CurlFactoryInterface
      * without an error status.
      */
     private static function retryFailedRewind(
-        callable $handler,
+        $handler,
         EasyHandle $easy,
         array $ctx
     ) {
@@ -499,7 +512,7 @@ class CurlFactory implements CurlFactoryInterface
             $easy->options['_curl_retries']++;
         }
 
-        return $handler($easy->request, $easy->options);
+        return call_user_func($handler, $easy->request, $easy->options);
     }
 
     private function createHeaderFn(EasyHandle $easy)
@@ -525,7 +538,7 @@ class CurlFactory implements CurlFactoryInterface
                 $easy->createResponse();
                 if ($onHeaders !== null) {
                     try {
-                        $onHeaders($easy->response);
+                        call_user_func($onHeaders, $easy->response);
                     } catch (\Exception $e) {
                         // Associate the exception with the handle and trigger
                         // a curl header write error by returning 0.
@@ -535,7 +548,7 @@ class CurlFactory implements CurlFactoryInterface
                 }
             } elseif ($startingResponse) {
                 $startingResponse = false;
-                $easy->headers = [$value];
+                $easy->headers = array($value);
             } else {
                 $easy->headers[] = $value;
             }

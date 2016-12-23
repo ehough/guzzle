@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle6\HandlerStack;
+use Hough\Promise\PromiseInterface;
+use Hough\Promise\RejectedPromise;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -32,8 +32,8 @@ class MockHandler implements \Countable
      */
     public static function createWithMiddleware(
         array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
+        $onFulfilled = null,
+        $onRejected = null
     ) {
         return HandlerStack::create(new self($queue, $onFulfilled, $onRejected));
     }
@@ -49,14 +49,14 @@ class MockHandler implements \Countable
      */
     public function __construct(
         array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
+        $onFulfilled = null,
+        $onRejected = null
     ) {
         $this->onFulfilled = $onFulfilled;
         $this->onRejected = $onRejected;
 
         if ($queue) {
-            call_user_func_array([$this, 'append'], $queue);
+            call_user_func_array(array($this, 'append'), $queue);
         }
     }
 
@@ -92,14 +92,16 @@ class MockHandler implements \Countable
 
         $response = $response instanceof \Exception
             ? new RejectedPromise($response)
-            : \GuzzleHttp\Promise\promise_for($response);
+            : \Hough\Promise\promise_for($response);
+
+        $invokeStats = array($this, '__invokeStats');
+        $checkFulfilled = array($this, '__runFulfilled');
+        $checkRejected = array($this, '__runRejected');
 
         return $response->then(
-            function ($value) use ($request, $options) {
-                $this->invokeStats($request, $options, $value);
-                if ($this->onFulfilled) {
-                    call_user_func($this->onFulfilled, $value);
-                }
+            function ($value) use ($request, $options, $invokeStats, $checkFulfilled) {
+                call_user_func($invokeStats, $request, $options, $value);
+                call_user_func($checkFulfilled, $value);
                 if (isset($options['sink'])) {
                     $contents = (string) $value->getBody();
                     $sink = $options['sink'];
@@ -115,14 +117,32 @@ class MockHandler implements \Countable
 
                 return $value;
             },
-            function ($reason) use ($request, $options) {
-                $this->invokeStats($request, $options, null, $reason);
-                if ($this->onRejected) {
-                    call_user_func($this->onRejected, $reason);
-                }
+            function ($reason) use ($request, $options, $invokeStats, $checkRejected) {
+                call_user_func($invokeStats, $request, $options, null, $reason);
+                call_user_func($checkRejected, $reason);
                 return new RejectedPromise($reason);
             }
         );
+    }
+
+    /**
+     * @internal
+     */
+    public function __runFulfilled($value)
+    {
+        if ($this->onFulfilled) {
+            call_user_func($this->onFulfilled, $value);
+        }
+    }
+
+    /**
+     * @internal
+     */
+    public function __runRejected($reason)
+    {
+        if ($this->onRejected) {
+            call_user_func($this->onRejected, $reason);
+        }
     }
 
     /**
@@ -140,7 +160,7 @@ class MockHandler implements \Countable
                 $this->queue[] = $value;
             } else {
                 throw new \InvalidArgumentException('Expected a response or '
-                    . 'exception. Found ' . \GuzzleHttp\describe_type($value));
+                    . 'exception. Found ' . \Hough\Guzzle6\describe_type($value));
             }
         }
     }
@@ -175,7 +195,10 @@ class MockHandler implements \Countable
         return count($this->queue);
     }
 
-    private function invokeStats(
+    /**
+     * @internal
+     */
+    public function __invokeStats(
         RequestInterface $request,
         array $options,
         ResponseInterface $response = null,

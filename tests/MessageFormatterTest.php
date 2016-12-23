@@ -1,14 +1,13 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\MessageFormatter;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Guzzle6\MessageFormatter;
 
 /**
- * @covers GuzzleHttp\MessageFormatter
+ * @covers \Hough\Guzzle6\MessageFormatter
  */
 class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,11 +21,11 @@ class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 
     public function dateProvider()
     {
-        return [
-            ['{ts}', '/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/'],
-            ['{date_iso_8601}', '/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/'],
-            ['{date_common_log}', '/^\d\d\/[A-Z][a-z]{2}\/[0-9]{4}/']
-        ];
+        return array(
+            array('{ts}', '/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/'),
+            array('{date_iso_8601}', '/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/'),
+            array('{date_common_log}', '/^\d\d\/[A-Z][a-z]{2}\/[0-9]{4}/')
+        );
     }
 
     /**
@@ -42,43 +41,43 @@ class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 
     public function formatProvider()
     {
-        $request = new Request('PUT', '/', ['x-test' => 'abc'], Psr7\stream_for('foo'));
-        $response = new Response(200, ['X-Baz' => 'Bar'], Psr7\stream_for('baz'));
+        $request = new Request('PUT', '/', array('x-test' => 'abc'), \Hough\Psr7\stream_for('foo'));
+        $response = new Response(200, array('X-Baz' => 'Bar'), \Hough\Psr7\stream_for('baz'));
         $err = new RequestException('Test', $request, $response);
 
-        return [
-            ['{request}', [$request], Psr7\str($request)],
-            ['{response}', [$request, $response], Psr7\str($response)],
-            ['{request} {response}', [$request, $response], Psr7\str($request) . ' ' . Psr7\str($response)],
+        return array(
+            array('{request}', array($request), \Hough\Psr7\str($request)),
+            array('{response}', array($request, $response), \Hough\Psr7\str($response)),
+            array('{request} {response}', array($request, $response), \Hough\Psr7\str($request) . ' ' . \Hough\Psr7\str($response)),
             // Empty response yields no value
-            ['{request} {response}', [$request], Psr7\str($request) . ' '],
-            ['{req_headers}', [$request], "PUT / HTTP/1.1\r\nx-test: abc"],
-            ['{res_headers}', [$request, $response], "HTTP/1.1 200 OK\r\nX-Baz: Bar"],
-            ['{res_headers}', [$request], 'NULL'],
-            ['{req_body}', [$request], 'foo'],
-            ['{res_body}', [$request, $response], 'baz'],
-            ['{res_body}', [$request], 'NULL'],
-            ['{method}', [$request], $request->getMethod()],
-            ['{url}', [$request], $request->getUri()],
-            ['{target}', [$request], $request->getRequestTarget()],
-            ['{req_version}', [$request], $request->getProtocolVersion()],
-            ['{res_version}', [$request, $response], $response->getProtocolVersion()],
-            ['{res_version}', [$request], 'NULL'],
-            ['{host}', [$request], $request->getHeaderLine('Host')],
-            ['{hostname}', [$request, $response], gethostname()],
-            ['{hostname}{hostname}', [$request, $response], gethostname() . gethostname()],
-            ['{code}', [$request, $response], $response->getStatusCode()],
-            ['{code}', [$request], 'NULL'],
-            ['{phrase}', [$request, $response], $response->getReasonPhrase()],
-            ['{phrase}', [$request], 'NULL'],
-            ['{error}', [$request, $response, $err], 'Test'],
-            ['{error}', [$request], 'NULL'],
-            ['{req_header_x-test}', [$request], 'abc'],
-            ['{req_header_x-not}', [$request], ''],
-            ['{res_header_X-Baz}', [$request, $response], 'Bar'],
-            ['{res_header_x-not}', [$request, $response], ''],
-            ['{res_header_X-Baz}', [$request], 'NULL'],
-        ];
+            array('{request} {response}', array($request), \Hough\Psr7\str($request) . ' '),
+            array('{req_headers}', array($request), "PUT / HTTP/1.1\r\nx-test: abc"),
+            array('{res_headers}', array($request, $response), "HTTP/1.1 200 OK\r\nX-Baz: Bar"),
+            array('{res_headers}', array($request), 'NULL'),
+            array('{req_body}', array($request), 'foo'),
+            array('{res_body}', array($request, $response), 'baz'),
+            array('{res_body}', array($request), 'NULL'),
+            array('{method}', array($request), $request->getMethod()),
+            array('{url}', array($request), $request->getUri()),
+            array('{target}', array($request), $request->getRequestTarget()),
+            array('{req_version}', array($request), $request->getProtocolVersion()),
+            array('{res_version}', array($request, $response), $response->getProtocolVersion()),
+            array('{res_version}', array($request), 'NULL'),
+            array('{host}', array($request), $request->getHeaderLine('Host')),
+            array('{hostname}', array($request, $response), gethostname()),
+            array('{hostname}{hostname}', array($request, $response), gethostname() . gethostname()),
+            array('{code}', array($request, $response), $response->getStatusCode()),
+            array('{code}', array($request), 'NULL'),
+            array('{phrase}', array($request, $response), $response->getReasonPhrase()),
+            array('{phrase}', array($request), 'NULL'),
+            array('{error}', array($request, $response, $err), 'Test'),
+            array('{error}', array($request), 'NULL'),
+            array('{req_header_x-test}', array($request), 'abc'),
+            array('{req_header_x-not}', array($request), ''),
+            array('{res_header_X-Baz}', array($request, $response), 'Bar'),
+            array('{res_header_x-not}', array($request, $response), ''),
+            array('{res_header_X-Baz}', array($request), 'NULL'),
+        );
     }
 
     /**

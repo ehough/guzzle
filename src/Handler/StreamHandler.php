@@ -1,13 +1,13 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Promise\FulfilledPromise;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Promise\FulfilledPromise;
+use Hough\Promise\RejectedPromise;
+use Hough\Promise\PromiseInterface;
+use Hough\Psr7;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -17,7 +17,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class StreamHandler
 {
-    private $lastHeaders = [];
+    private $lastHeaders = array();
 
     /**
      * Sends an HTTP request.
@@ -84,7 +84,7 @@ class StreamHandler
                 $response,
                 microtime(true) - $startTime,
                 $error,
-                []
+                array()
             );
             call_user_func($options['on_stats'], $stats);
         }
@@ -97,12 +97,13 @@ class StreamHandler
         $startTime
     ) {
         $hdrs = $this->lastHeaders;
-        $this->lastHeaders = [];
+        $this->lastHeaders = array();
         $parts = explode(' ', array_shift($hdrs), 3);
-        $ver = explode('/', $parts[0])[1];
+        $exploded = explode('/', $parts[0]);
+        $ver = $exploded[1];
         $status = $parts[1];
         $reason = isset($parts[2]) ? $parts[2] : null;
-        $headers = \GuzzleHttp\headers_from_lines($hdrs);
+        $headers = \Hough\Guzzle6\headers_from_lines($hdrs);
         list ($stream, $headers) = $this->checkDecode($options, $headers, $stream);
         $stream = Psr7\stream_for($stream);
         $sink = $stream;
@@ -157,7 +158,7 @@ class StreamHandler
     {
         // Automatically decode responses when instructed.
         if (!empty($options['decode_content'])) {
-            $normalizedKeys = \GuzzleHttp\normalize_header_keys($headers);
+            $normalizedKeys = \Hough\Guzzle6\normalize_header_keys($headers);
             if (isset($normalizedKeys['content-encoding'])) {
                 $encoding = $headers[$normalizedKeys['content-encoding']];
                 if ($encoding[0] === 'gzip' || $encoding[0] === 'deflate') {
@@ -177,14 +178,14 @@ class StreamHandler
                         if ($length === 0) {
                             unset($headers[$normalizedKeys['content-length']]);
                         } else {
-                            $headers[$normalizedKeys['content-length']] = [$length];
+                            $headers[$normalizedKeys['content-length']] = array($length);
                         }
                     }
                 }
             }
         }
 
-        return [$stream, $headers];
+        return array($stream, $headers);
     }
 
     /**
@@ -227,19 +228,19 @@ class StreamHandler
      * @return resource
      * @throws \RuntimeException on error
      */
-    private function createResource(callable $callback)
+    private function createResource($callback)
     {
         $errors = null;
         set_error_handler(function ($_, $msg, $file, $line) use (&$errors) {
-            $errors[] = [
+            $errors[] = array(
                 'message' => $msg,
                 'file'    => $file,
                 'line'    => $line
-            ];
+            );
             return true;
         });
 
-        $resource = $callback();
+        $resource = call_user_func($callback);
         restore_error_handler();
 
         if (!$resource) {
@@ -275,7 +276,7 @@ class StreamHandler
             $options['verify'] = true;
         }
 
-        $params = [];
+        $params = array();
         $context = $this->getDefaultContext($request, $options);
 
         if (isset($options['on_headers']) && !is_callable($options['on_headers'])) {
@@ -284,7 +285,7 @@ class StreamHandler
 
         if (!empty($options)) {
             foreach ($options as $key => $value) {
-                $method = "add_{$key}";
+                $method = "__add_{$key}";
                 if (isset($methods[$method])) {
                     $this->{$method}($request, $context, $value, $params);
                 }
@@ -307,13 +308,22 @@ class StreamHandler
             }
         );
 
+        $callback = array($this, '__open');
         return $this->createResource(
-            function () use ($request, &$http_response_header, $context) {
-                $resource = fopen((string) $request->getUri()->withFragment(''), 'r', null, $context);
-                $this->lastHeaders = $http_response_header;
-                return $resource;
+            function () use ($request, $context, $callback) {
+                return call_user_func($callback, $request, $context);
             }
         );
+    }
+
+    /**
+     * @internal
+     */
+    public function __open(RequestInterface $request, $context)
+    {
+        $resource = fopen((string) $request->getUri()->withFragment(''), 'r', null, $context);
+        $this->lastHeaders = $http_response_header;
+        return $resource;
     }
 
     private function getDefaultContext(RequestInterface $request)
@@ -325,15 +335,15 @@ class StreamHandler
             }
         }
 
-        $context = [
-            'http' => [
+        $context = array(
+            'http' => array(
                 'method'           => $request->getMethod(),
                 'header'           => $headers,
                 'protocol_version' => $request->getProtocolVersion(),
                 'ignore_errors'    => true,
                 'follow_location'  => 0,
-            ],
-        ];
+            ),
+        );
 
         $body = (string) $request->getBody();
 
@@ -350,7 +360,10 @@ class StreamHandler
         return $context;
     }
 
-    private function add_proxy(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_proxy(RequestInterface $request, &$options, $value, &$params)
     {
         if (!is_array($value)) {
             $options['http']['proxy'] = $value;
@@ -358,7 +371,7 @@ class StreamHandler
             $scheme = $request->getUri()->getScheme();
             if (isset($value[$scheme])) {
                 if (!isset($value['no'])
-                    || !\GuzzleHttp\is_host_in_noproxy(
+                    || !\Hough\Guzzle6\is_host_in_noproxy(
                         $request->getUri()->getHost(),
                         $value['no']
                     )
@@ -369,20 +382,26 @@ class StreamHandler
         }
     }
 
-    private function add_timeout(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_timeout(RequestInterface $request, &$options, $value, &$params)
     {
         if ($value > 0) {
             $options['http']['timeout'] = $value;
         }
     }
 
-    private function add_verify(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_verify(RequestInterface $request, &$options, $value, &$params)
     {
         if ($value === true) {
             // PHP 5.6 or greater will find the system cert by default. When
             // < 5.6, use the Guzzle bundled cacert.
             if (PHP_VERSION_ID < 50600) {
-                $options['ssl']['cafile'] = \GuzzleHttp\default_ca_bundle();
+                $options['ssl']['cafile'] = \Hough\Guzzle6\default_ca_bundle();
             }
         } elseif (is_string($value)) {
             $options['ssl']['cafile'] = $value;
@@ -402,7 +421,10 @@ class StreamHandler
         $options['ssl']['allow_self_signed'] = false;
     }
 
-    private function add_cert(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_cert(RequestInterface $request, &$options, $value, &$params)
     {
         if (is_array($value)) {
             $options['ssl']['passphrase'] = $value[1];
@@ -416,25 +438,31 @@ class StreamHandler
         $options['ssl']['local_cert'] = $value;
     }
 
-    private function add_progress(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_progress(RequestInterface $request, &$options, $value, &$params)
     {
         $this->addNotification(
             $params,
             function ($code, $a, $b, $c, $transferred, $total) use ($value) {
                 if ($code == STREAM_NOTIFY_PROGRESS) {
-                    $value($total, $transferred, null, null);
+                    call_user_func($value, $total, $transferred, null, null);
                 }
             }
         );
     }
 
-    private function add_debug(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_debug(RequestInterface $request, &$options, $value, &$params)
     {
         if ($value === false) {
             return;
         }
 
-        static $map = [
+        static $map = array(
             STREAM_NOTIFY_CONNECT       => 'CONNECT',
             STREAM_NOTIFY_AUTH_REQUIRED => 'AUTH_REQUIRED',
             STREAM_NOTIFY_AUTH_RESULT   => 'AUTH_RESULT',
@@ -445,11 +473,11 @@ class StreamHandler
             STREAM_NOTIFY_FAILURE       => 'FAILURE',
             STREAM_NOTIFY_COMPLETED     => 'COMPLETED',
             STREAM_NOTIFY_RESOLVE       => 'RESOLVE',
-        ];
-        static $args = ['severity', 'message', 'message_code',
-            'bytes_transferred', 'bytes_max'];
+        );
+        static $args = array('severity', 'message', 'message_code',
+            'bytes_transferred', 'bytes_max');
 
-        $value = \GuzzleHttp\debug_resource($value);
+        $value = \Hough\Guzzle6\debug_resource($value);
         $ident = $request->getMethod() . ' ' . $request->getUri()->withFragment('');
         $this->addNotification(
             $params,
@@ -465,16 +493,16 @@ class StreamHandler
         );
     }
 
-    private function addNotification(array &$params, callable $notify)
+    private function addNotification(array &$params, $notify)
     {
         // Wrap the existing function if needed.
         if (!isset($params['notification'])) {
             $params['notification'] = $notify;
         } else {
-            $params['notification'] = $this->callArray([
+            $params['notification'] = $this->callArray(array(
                 $params['notification'],
                 $notify
-            ]);
+            ));
         }
     }
 

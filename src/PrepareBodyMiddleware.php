@@ -1,8 +1,8 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
+use Hough\Promise\PromiseInterface;
+use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -15,12 +15,12 @@ class PrepareBodyMiddleware
     private $nextHandler;
 
     /** @var array */
-    private static $skipMethods = ['GET' => true, 'HEAD' => true];
+    private static $skipMethods = array('GET' => true, 'HEAD' => true);
 
     /**
      * @param callable $nextHandler Next handler to invoke.
      */
-    public function __construct(callable $nextHandler)
+    public function __construct($nextHandler)
     {
         $this->nextHandler = $nextHandler;
     }
@@ -39,10 +39,10 @@ class PrepareBodyMiddleware
         if (isset(self::$skipMethods[$request->getMethod()])
             || $request->getBody()->getSize() === 0
         ) {
-            return $fn($request, $options);
+            return call_user_func($fn, $request, $options);
         }
 
-        $modify = [];
+        $modify = array();
 
         // Add a default content-type if possible.
         if (!$request->hasHeader('Content-Type')) {
@@ -69,7 +69,7 @@ class PrepareBodyMiddleware
         // Add the expect header if needed.
         $this->addExpectHeader($request, $options, $modify);
 
-        return $fn(Psr7\modify_request($request, $modify), $options);
+        return call_user_func($fn, Psr7\modify_request($request, $modify), $options);
     }
 
     private function addExpectHeader(

@@ -1,7 +1,7 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\RequestOptions;
+use Hough\Guzzle6\RequestOptions;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -19,13 +19,13 @@ class Proxy
      * @return callable Returns the composed handler.
      */
     public static function wrapSync(
-        callable $default,
-        callable $sync
+        $default,
+        $sync
     ) {
         return function (RequestInterface $request, array $options) use ($default, $sync) {
             return empty($options[RequestOptions::SYNCHRONOUS])
-                ? $default($request, $options)
-                : $sync($request, $options);
+                ? call_user_func($default, $request, $options)
+                : call_user_func($sync, $request, $options);
         };
     }
 
@@ -43,13 +43,13 @@ class Proxy
      * @return callable Returns the composed handler.
      */
     public static function wrapStreaming(
-        callable $default,
-        callable $streaming
+        $default,
+        $streaming
     ) {
         return function (RequestInterface $request, array $options) use ($default, $streaming) {
             return empty($options['stream'])
-                ? $default($request, $options)
-                : $streaming($request, $options);
+                ? call_user_func($default, $request, $options)
+                : call_user_func($streaming, $request, $options);
         };
     }
 }

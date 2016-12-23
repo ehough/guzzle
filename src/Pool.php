@@ -1,9 +1,8 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Promise\PromisorInterface;
-use Psr\Http\Message\RequestInterface;
-use GuzzleHttp\Promise\EachPromise;
+use Hough\Promise\PromisorInterface;
+use Hough\Promise\EachPromise;
 
 /**
  * Sends and iterator of requests concurrently using a capped pool size.
@@ -34,7 +33,7 @@ class Pool implements PromisorInterface
     public function __construct(
         ClientInterface $client,
         $requests,
-        array $config = []
+        array $config = array()
     ) {
         // Backwards compatibility.
         if (isset($config['pool_size'])) {
@@ -47,26 +46,13 @@ class Pool implements PromisorInterface
             $opts = $config['options'];
             unset($config['options']);
         } else {
-            $opts = [];
+            $opts = array();
         }
 
-        $iterable = \GuzzleHttp\Promise\iter_for($requests);
-        $requests = function () use ($iterable, $client, $opts) {
-            foreach ($iterable as $key => $rfn) {
-                if ($rfn instanceof RequestInterface) {
-                    yield $key => $client->sendAsync($rfn, $opts);
-                } elseif (is_callable($rfn)) {
-                    yield $key => $rfn($opts);
-                } else {
-                    throw new \InvalidArgumentException('Each value yielded by '
-                        . 'the iterator must be a Psr7\Http\Message\RequestInterface '
-                        . 'or a callable that returns a promise that fulfills '
-                        . 'with a Psr7\Message\Http\ResponseInterface object.');
-                }
-            }
-        };
+        $iterable = \Hough\Promise\iter_for($requests);
+        $requests = new PoolGenerator($iterable, $client, $opts);
 
-        $this->each = new EachPromise($requests(), $config);
+        $this->each = new EachPromise(call_user_func($requests), $config);
     }
 
     public function promise()
@@ -85,7 +71,7 @@ class Pool implements PromisorInterface
      * @param ClientInterface $client   Client used to send the requests
      * @param array|\Iterator $requests Requests to send concurrently.
      * @param array           $options  Passes through the options available in
-     *                                  {@see GuzzleHttp\Pool::__construct}
+     *                                  {@see Hough\Guzzle6\Pool::__construct}
      *
      * @return array Returns an array containing the response or an exception
      *               in the same order that the requests were sent.
@@ -94,9 +80,9 @@ class Pool implements PromisorInterface
     public static function batch(
         ClientInterface $client,
         $requests,
-        array $options = []
+        array $options = array()
     ) {
-        $res = [];
+        $res = array();
         self::cmpCallback($options, 'fulfilled', $res);
         self::cmpCallback($options, 'rejected', $res);
         $pool = new static($client, $requests, $options);
@@ -115,7 +101,7 @@ class Pool implements PromisorInterface
         } else {
             $currentFn = $options[$name];
             $options[$name] = function ($v, $k) use (&$results, $currentFn) {
-                $currentFn($v, $k);
+                call_user_func($currentFn, $v, $k);
                 $results[$k] = $v;
             };
         }

@@ -1,10 +1,27 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\Handler\CurlMultiHandler;
-use GuzzleHttp\Handler\Proxy;
-use GuzzleHttp\Handler\StreamHandler;
+use Hough\Guzzle6\Handler\CurlHandler;
+use Hough\Guzzle6\Handler\CurlMultiHandler;
+use Hough\Guzzle6\Handler\Proxy;
+use Hough\Guzzle6\Handler\StreamHandler;
+
+//http://php.net/manual/en/function.json-last-error-msg.php#117393
+if (!function_exists('json_last_error_msg')) {
+    function json_last_error_msg() {
+        static $ERRORS = array(
+            JSON_ERROR_NONE => 'No error',
+            JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
+            JSON_ERROR_STATE_MISMATCH => 'State mismatch (invalid or malformed JSON)',
+            JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
+            JSON_ERROR_SYNTAX => 'Syntax error',
+            JSON_ERROR_UTF8 => 'Malformed UTF-8 characters, possibly incorrectly encoded'
+        );
+
+        $error = json_last_error();
+        return isset($ERRORS[$error]) ? $ERRORS[$error] : 'Unknown error';
+    }
+}
 
 /**
  * Expands a URI template
@@ -49,7 +66,14 @@ function describe_type($input)
             ob_start();
             var_dump($input);
             // normalize float vs double
-            return str_replace('double(', 'float(', rtrim(ob_get_clean()));
+            $toReturn = str_replace('double(', 'float(', rtrim(ob_get_clean()));
+
+            if (extension_loaded('xdebug') && (string) ini_get('xdebug.overload_var_dump') === '2') {
+
+                $toReturn = preg_replace('~^.+\n~', '', $toReturn);
+            }
+
+            return $toReturn;
     }
 }
 
@@ -62,7 +86,7 @@ function describe_type($input)
  */
 function headers_from_lines($lines)
 {
-    $headers = [];
+    $headers = array();
 
     foreach ($lines as $line) {
         $parts = explode(':', $line, 2);
@@ -116,7 +140,7 @@ function choose_handler()
             ? Proxy::wrapStreaming($handler, new StreamHandler())
             : new StreamHandler();
     } elseif (!$handler) {
-        throw new \RuntimeException('GuzzleHttp requires cURL, the '
+        throw new \RuntimeException('ehough/guzzle6 requires cURL, the '
             . 'allow_url_fopen ini setting, or a custom HTTP handler.');
     }
 
@@ -133,9 +157,10 @@ function default_user_agent()
     static $defaultAgent = '';
 
     if (!$defaultAgent) {
-        $defaultAgent = 'GuzzleHttp/' . Client::VERSION;
+        $defaultAgent = 'ehough/guzzle6/' . Client::VERSION;
+        $curlVersion  = \curl_version();
         if (extension_loaded('curl') && function_exists('curl_version')) {
-            $defaultAgent .= ' curl/' . \curl_version()['version'];
+            $defaultAgent .= ' curl/' . $curlVersion['version'];
         }
         $defaultAgent .= ' PHP/' . PHP_VERSION;
     }
@@ -160,7 +185,7 @@ function default_user_agent()
 function default_ca_bundle()
 {
     static $cached = null;
-    static $cafiles = [
+    static $cafiles = array(
         // Red Hat, CentOS, Fedora (provided by the ca-certificates package)
         '/etc/pki/tls/certs/ca-bundle.crt',
         // Ubuntu, Debian (provided by the ca-certificates package)
@@ -176,7 +201,7 @@ function default_ca_bundle()
         // Windows?
         'C:\\windows\\system32\\curl-ca-bundle.crt',
         'C:\\windows\\curl-ca-bundle.crt',
-    ];
+    );
 
     if ($cached) {
         return $cached;
@@ -223,7 +248,7 @@ EOT
  */
 function normalize_header_keys(array $headers)
 {
-    $result = [];
+    $result = array();
     foreach (array_keys($headers) as $key) {
         $result[strtolower($key)] = $key;
     }
@@ -258,7 +283,8 @@ function is_host_in_noproxy($host, array $noProxyArray)
 
     // Strip port if present.
     if (strpos($host, ':')) {
-        $host = explode($host, ':', 2)[0];
+        $exploded = explode($host, ':', 2);
+        $host = $exploded[0];
     }
 
     foreach ($noProxyArray as $area) {
@@ -299,7 +325,15 @@ function is_host_in_noproxy($host, array $noProxyArray)
  */
 function json_decode($json, $assoc = false, $depth = 512, $options = 0)
 {
-    $data = \json_decode($json, $assoc, $depth, $options);
+    if (version_compare(PHP_VERSION, '5.4', '>=')) {
+
+        $data = \json_decode($json, $assoc, $depth, $options);
+
+    } else {
+
+        $data = \json_decode($json, $assoc, $depth);
+    }
+
     if (JSON_ERROR_NONE !== json_last_error()) {
         throw new \InvalidArgumentException(
             'json_decode error: ' . json_last_error_msg());
@@ -321,7 +355,14 @@ function json_decode($json, $assoc = false, $depth = 512, $options = 0)
  */
 function json_encode($value, $options = 0, $depth = 512)
 {
-    $json = \json_encode($value, $options, $depth);
+    if (version_compare(PHP_VERSION, '5.5', '>=')) {
+
+        $json = \json_encode($value, $options, $depth);
+    } else {
+
+        $json = \json_encode($value, $options);
+    }
+
     if (JSON_ERROR_NONE !== json_last_error()) {
         throw new \InvalidArgumentException(
             'json_encode error: ' . json_last_error_msg());

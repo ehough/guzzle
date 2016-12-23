@@ -1,7 +1,7 @@
 <?php
-namespace GuzzleHttp\Test;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp;
+use Hough\Guzzle6;
 
 class FunctionsTest extends \PHPUnit_Framework_TestCase
 {
@@ -9,78 +9,78 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             'foo/123',
-            GuzzleHttp\uri_template('foo/{bar}', ['bar' => '123'])
+            \Hough\Guzzle6\uri_template('foo/{bar}', array('bar' => '123'))
         );
     }
     public function noBodyProvider()
     {
-        return [['get'], ['head'], ['delete']];
+        return array(array('get'), array('head'), array('delete'));
     }
 
     public function testProvidesDefaultUserAgent()
     {
-        $ua = GuzzleHttp\default_user_agent();
-        $this->assertEquals(1, preg_match('#^GuzzleHttp/.+ curl/.+ PHP/.+$#', $ua));
+        $ua = \Hough\Guzzle6\default_user_agent();
+        $this->assertEquals(1, preg_match('#^ehough/guzzle6/[1-9]+\.[0-9]+\.[0-9]+ curl/.+ PHP/.+$#', $ua));
     }
 
     public function typeProvider()
     {
-        return [
-            ['foo', 'string(3) "foo"'],
-            [true, 'bool(true)'],
-            [false, 'bool(false)'],
-            [10, 'int(10)'],
-            [1.0, 'float(1)'],
-            [new StrClass(), 'object(GuzzleHttp\Test\StrClass)'],
-            [['foo'], 'array(1)']
-        ];
+        return array(
+            array('foo', 'string(3) "foo"'),
+            array(true, 'bool(true)'),
+            array(false, 'bool(false)'),
+            array(10, 'int(10)'),
+            array(1.0, 'float(1)'),
+            array(new StrClass(), 'object(Hough\Tests\Guzzle6\StrClass)'),
+            array(array('foo'), 'array(1)')
+        );
     }
     /**
      * @dataProvider typeProvider
      */
     public function testDescribesType($input, $output)
     {
-        $this->assertEquals($output, GuzzleHttp\describe_type($input));
+        $this->assertEquals($output, \Hough\Guzzle6\describe_type($input));
     }
 
     public function testParsesHeadersFromLines()
     {
-        $lines = ['Foo: bar', 'Foo: baz', 'Abc: 123', 'Def: a, b'];
-        $this->assertEquals([
-            'Foo' => ['bar', 'baz'],
-            'Abc' => ['123'],
-            'Def' => ['a, b'],
-        ], GuzzleHttp\headers_from_lines($lines));
+        $lines = array('Foo: bar', 'Foo: baz', 'Abc: 123', 'Def: a, b');
+        $this->assertEquals(array(
+            'Foo' => array('bar', 'baz'),
+            'Abc' => array('123'),
+            'Def' => array('a, b'),
+        ), \Hough\Guzzle6\headers_from_lines($lines));
     }
 
     public function testParsesHeadersFromLinesWithMultipleLines()
     {
-        $lines = ['Foo: bar', 'Foo: baz', 'Foo: 123'];
-        $this->assertEquals([
-            'Foo' => ['bar', 'baz', '123'],
-        ], GuzzleHttp\headers_from_lines($lines));
+        $lines = array('Foo: bar', 'Foo: baz', 'Foo: 123');
+        $this->assertEquals(array(
+            'Foo' => array('bar', 'baz', '123'),
+        ), \Hough\Guzzle6\headers_from_lines($lines));
     }
 
     public function testReturnsDebugResource()
     {
-        $this->assertTrue(is_resource(GuzzleHttp\debug_resource()));
+        $this->assertTrue(is_resource(\Hough\Guzzle6\debug_resource()));
     }
 
     public function testProvidesDefaultCaBundler()
     {
-        $this->assertFileExists(GuzzleHttp\default_ca_bundle());
+        $this->assertFileExists(\Hough\Guzzle6\default_ca_bundle());
     }
 
     public function noProxyProvider()
     {
-        return [
-            ['mit.edu', ['.mit.edu'], false],
-            ['foo.mit.edu', ['.mit.edu'], true],
-            ['mit.edu', ['mit.edu'], true],
-            ['mit.edu', ['baz', 'mit.edu'], true],
-            ['mit.edu', ['', '', 'mit.edu'], true],
-            ['mit.edu', ['baz', '*'], true],
-        ];
+        return array(
+            array('mit.edu', array('.mit.edu'), false),
+            array('foo.mit.edu', array('.mit.edu'), true),
+            array('mit.edu', array('mit.edu'), true),
+            array('mit.edu', array('baz', 'mit.edu'), true),
+            array('mit.edu', array('', '', 'mit.edu'), true),
+            array('mit.edu', array('baz', '*'), true),
+        );
     }
 
     /**
@@ -90,7 +90,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             $result,
-            \GuzzleHttp\is_host_in_noproxy($host, $list)
+            \Hough\Guzzle6\is_host_in_noproxy($host, $list)
         );
     }
 
@@ -99,12 +99,12 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsuresNoProxyCheckHostIsSet()
     {
-        \GuzzleHttp\is_host_in_noproxy('', []);
+        \Hough\Guzzle6\is_host_in_noproxy('', array());
     }
 
     public function testEncodesJson()
     {
-        $this->assertEquals('true', \GuzzleHttp\json_encode(true));
+        $this->assertEquals('true', \Hough\Guzzle6\json_encode(true));
     }
 
     /**
@@ -112,12 +112,12 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testEncodesJsonAndThrowsOnError()
     {
-        \GuzzleHttp\json_encode("\x99");
+        \Hough\Guzzle6\json_encode("\x99");
     }
 
     public function testDecodesJson()
     {
-        $this->assertSame(true, \GuzzleHttp\json_decode('true'));
+        $this->assertSame(true, \Hough\Guzzle6\json_decode('true'));
     }
 
     /**
@@ -125,7 +125,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testDecodesJsonAndThrowsOnError()
     {
-        \GuzzleHttp\json_decode('{{]]');
+        \Hough\Guzzle6\json_decode('{{]]');
     }
 }
 

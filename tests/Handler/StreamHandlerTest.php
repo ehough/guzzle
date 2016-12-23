@@ -1,46 +1,47 @@
 <?php
-namespace GuzzleHttp\Test\Handler;
+namespace Hough\Test\Guzzle6\Handler;
 
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Handler\StreamHandler;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\FnStream;
-use GuzzleHttp\Tests\Server;
-use GuzzleHttp\TransferStats;
+use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Guzzle6\Handler\StreamHandler;
+use Hough\Psr7;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
+use Hough\Psr7\FnStream;
+use Hough\Tests\Guzzle6\Server;
+use Hough\Guzzle6\TransferStats;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @covers \GuzzleHttp\Handler\StreamHandler
+ * @covers \Hough\Guzzle6\Handler\StreamHandler
  */
 class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 {
     private function queueRes()
     {
         Server::flush();
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Foo' => 'Bar',
                 'Content-Length' => 8,
-            ], 'hi there')
-        ]);
+            ), 'hi there')
+        ));
     }
 
     public function testReturnsResponseForSuccessfulRequest()
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $response = $handler(
-            new Request('GET', Server::$url, ['Foo' => 'Bar']),
-            []
+        $response = call_user_func($handler, 
+            new Request('GET', Server::$url, array('Foo' => 'Bar')),
+            array()
         )->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('OK', $response->getReasonPhrase());
         $this->assertEquals('Bar', $response->getHeaderLine('Foo'));
         $this->assertEquals('8', $response->getHeaderLine('Content-Length'));
         $this->assertEquals('hi there', (string) $response->getBody());
-        $sent = Server::received()[0];
+        $received = Server::received();
+        $sent = $received[0];
         $this->assertEquals('GET', $sent->getMethod());
         $this->assertEquals('/', $sent->getUri()->getPath());
         $this->assertEquals('127.0.0.1:8126', $sent->getHeaderLine('Host'));
@@ -48,14 +49,14 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      */
     public function testAddsErrorToResponse()
     {
         $handler = new StreamHandler();
-        $handler(
+        call_user_func($handler, 
             new Request('GET', 'http://localhost:123'),
-            ['timeout' => 0.01]
+            array('timeout' => 0.01)
         )->wait();
     }
 
@@ -66,20 +67,22 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $request = new Request(
             'PUT',
             Server::$url . 'foo?baz=bar',
-            ['Foo' => 'Bar'],
+            array('Foo' => 'Bar'),
             'test'
         );
-        $response = $handler($request, ['stream' => true])->wait();
+        $response = call_user_func($handler, $request, array('stream' => true))->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('OK', $response->getReasonPhrase());
         $this->assertEquals('8', $response->getHeaderLine('Content-Length'));
         $body = $response->getBody();
         $stream = $body->detach();
         $this->assertTrue(is_resource($stream));
-        $this->assertEquals('http', stream_get_meta_data($stream)['wrapper_type']);
+        $metadata = stream_get_meta_data($stream);
+        $this->assertEquals('http', $metadata['wrapper_type']);
         $this->assertEquals('hi there', stream_get_contents($stream));
         fclose($stream);
-        $sent = Server::received()[0];
+        $received = Server::received();
+        $sent = $received[0];
         $this->assertEquals('PUT', $sent->getMethod());
         $this->assertEquals('http://127.0.0.1:8126/foo?baz=bar', (string) $sent->getUri());
         $this->assertEquals('Bar', $sent->getHeaderLine('Foo'));
@@ -91,10 +94,11 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $this->queueRes();
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, [])->wait();
+        $response = call_user_func($handler, $request, array())->wait();
         $body = $response->getBody();
         $stream = $body->detach();
-        $this->assertEquals('php://temp', stream_get_meta_data($stream)['uri']);
+        $metadata = stream_get_meta_data($stream);
+        $this->assertEquals('php://temp', $metadata['uri']);
         $this->assertEquals('hi', fread($stream, 2));
         fclose($stream);
     }
@@ -105,9 +109,10 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $this->queueRes();
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, ['sink' => $r])->wait();
+        $response = call_user_func($handler, $request, array('sink' => $r))->wait();
         $body = $response->getBody()->detach();
-        $this->assertEquals('php://temp', stream_get_meta_data($body)['uri']);
+        $metadata = stream_get_meta_data($body);
+        $this->assertEquals('php://temp', $metadata['uri']);
         $this->assertEquals('hi', fread($body, 2));
         $this->assertEquals(' there', stream_get_contents($r));
         fclose($r);
@@ -119,7 +124,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $this->queueRes();
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, ['sink' => $tmpfname])->wait();
+        $response = call_user_func($handler, $request, array('sink' => $tmpfname))->wait();
         $body = $response->getBody();
         $this->assertEquals($tmpfname, $body->getMetadata('uri'));
         $this->assertEquals('hi', $body->read(2));
@@ -134,7 +139,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $this->queueRes();
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, ['sink' => $tmpfname])->wait();
+        $response = call_user_func($handler, $request, array('sink' => $tmpfname))->wait();
         $body = $response->getBody();
         $this->assertEquals($tmpfname, $body->getMetadata('uri'));
         $this->assertEquals('hi', $body->read(2));
@@ -145,15 +150,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     public function testDrainsResponseAndReadsOnlyContentLengthBytes()
     {
         Server::flush();
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Foo' => 'Bar',
                 'Content-Length' => 8,
-            ], 'hi there... This has way too much data!')
-        ]);
+            ), 'hi there... This has way too much data!')
+        ));
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, [])->wait();
+        $response = call_user_func($handler, $request, array())->wait();
         $body = $response->getBody();
         $stream = $body->detach();
         $this->assertEquals('hi there', stream_get_contents($stream));
@@ -164,15 +169,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         Server::flush();
         // Say the content-length is 8, but return no response.
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Foo' => 'Bar',
                 'Content-Length' => 8,
-            ], '')
-        ]);
+            ), '')
+        ));
         $handler = new StreamHandler();
         $request = new Request('HEAD', Server::$url);
-        $response = $handler($request, [])->wait();
+        $response = call_user_func($handler, $request, array())->wait();
         $body = $response->getBody();
         $stream = $body->detach();
         $this->assertEquals('', stream_get_contents($stream));
@@ -183,15 +188,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         Server::flush();
         $content = gzencode('test');
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Content-Encoding' => 'gzip',
                 'Content-Length'   => strlen($content),
-            ], $content)
-        ]);
+            ), $content)
+        ));
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, ['decode_content' => true])->wait();
+        $response = call_user_func($handler, $request, array('decode_content' => true))->wait();
         $this->assertEquals('test', (string) $response->getBody());
         $this->assertFalse($response->hasHeader('content-encoding'));
         $this->assertTrue(!$response->hasHeader('content-length') || $response->getHeaderLine('content-length') == $response->getBody()->getSize());
@@ -201,15 +206,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         Server::flush();
         $content = gzencode('test');
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Content-Encoding' => 'gzip',
                 'Content-Length'   => strlen($content),
-            ], $content)
-        ]);
+            ), $content)
+        ));
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, ['decode_content' => true])->wait();
+        $response = call_user_func($handler, $request, array('decode_content' => true))->wait();
 
         $this->assertSame(
             'gzip',
@@ -225,15 +230,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         Server::flush();
         $content = gzencode('test');
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Content-Encoding' => 'gzip',
                 'Content-Length'   => strlen($content),
-            ], $content)
-        ]);
+            ), $content)
+        ));
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, ['decode_content' => false])->wait();
+        $response = call_user_func($handler, $request, array('decode_content' => false))->wait();
         $this->assertSame($content, (string) $response->getBody());
         $this->assertEquals('gzip', $response->getHeaderLine('content-encoding'));
         $this->assertEquals(strlen($content), $response->getHeaderLine('content-length'));
@@ -243,9 +248,10 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('GET', Server::$url, [], null, '1.0');
-        $handler($request, []);
-        $this->assertEquals('1.0', Server::received()[0]->getProtocolVersion());
+        $request = new Request('GET', Server::$url, array(), null, '1.0');
+        call_user_func($handler, $request, array());
+        $received = Server::received();
+        $this->assertEquals('1.0', $received[0]->getProtocolVersion());
     }
 
     protected function getSendResult(array $opts)
@@ -254,22 +260,22 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $handler = new StreamHandler();
         $opts['stream'] = true;
         $request = new Request('GET', Server::$url);
-        return $handler($request, $opts)->wait();
+        return call_user_func($handler, $request, $opts)->wait();
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException
+     * @expectedException \Hough\Guzzle6\Exception\ConnectException
      * @expectedExceptionMessage Connection refused
      */
     public function testAddsProxy()
     {
-        $this->getSendResult(['proxy' => '127.0.0.1:8125']);
+        $this->getSendResult(array('proxy' => '127.0.0.1:8125'));
     }
 
     public function testAddsProxyByProtocol()
     {
         $url = str_replace('http', 'tcp', Server::$url);
-        $res = $this->getSendResult(['proxy' => ['http' => $url]]);
+        $res = $this->getSendResult(array('proxy' => array('http' => $url)));
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertEquals($url, $opts['http']['proxy']);
     }
@@ -277,48 +283,48 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     public function testAddsProxyButHonorsNoProxy()
     {
         $url = str_replace('http', 'tcp', Server::$url);
-        $res = $this->getSendResult(['proxy' => [
+        $res = $this->getSendResult(array('proxy' => array(
             'http' => $url,
-            'no'   => ['*']
-        ]]);
+            'no'   => array('*')
+        )));
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertTrue(empty($opts['http']['proxy']));
     }
 
     public function testAddsTimeout()
     {
-        $res = $this->getSendResult(['stream' => true, 'timeout' => 200]);
+        $res = $this->getSendResult(array('stream' => true, 'timeout' => 200));
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertEquals(200, $opts['http']['timeout']);
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage SSL CA bundle not found: /does/not/exist
      */
     public function testVerifiesVerifyIsValidIfPath()
     {
-        $this->getSendResult(['verify' => '/does/not/exist']);
+        $this->getSendResult(array('verify' => '/does/not/exist'));
     }
 
     public function testVerifyCanBeDisabled()
     {
-        $this->getSendResult(['verify' => false]);
+        $this->getSendResult(array('verify' => false));
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage SSL certificate not found: /does/not/exist
      */
     public function testVerifiesCertIfValidPath()
     {
-        $this->getSendResult(['cert' => '/does/not/exist']);
+        $this->getSendResult(array('cert' => '/does/not/exist'));
     }
 
     public function testVerifyCanBeSetToPath()
     {
-        $path = $path = \GuzzleHttp\default_ca_bundle();
-        $res = $this->getSendResult(['verify' => $path]);
+        $path = $path = \Hough\Guzzle6\default_ca_bundle();
+        $res = $this->getSendResult(array('verify' => $path));
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertEquals(true, $opts['ssl']['verify_peer']);
         $this->assertEquals(true, $opts['ssl']['verify_peer_name']);
@@ -328,8 +334,8 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testUsesSystemDefaultBundle()
     {
-        $path = $path = \GuzzleHttp\default_ca_bundle();
-        $res = $this->getSendResult(['verify' => true]);
+        $path = $path = \Hough\Guzzle6\default_ca_bundle();
+        $res = $this->getSendResult(array('verify' => true));
         $opts = stream_context_get_options($res->getBody()->detach());
         if (PHP_VERSION_ID < 50600) {
             $this->assertEquals($path, $opts['ssl']['cafile']);
@@ -342,13 +348,13 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsuresVerifyOptionIsValid()
     {
-        $this->getSendResult(['verify' => 10]);
+        $this->getSendResult(array('verify' => 10));
     }
 
     public function testCanSetPasswordWhenSettingCert()
     {
         $path = __FILE__;
-        $res = $this->getSendResult(['cert' => [$path, 'foo']]);
+        $res = $this->getSendResult(array('cert' => array($path, 'foo')));
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertEquals($path, $opts['ssl']['local_cert']);
         $this->assertEquals('foo', $opts['ssl']['passphrase']);
@@ -358,7 +364,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $f = fopen('php://temp', 'w+');
-        $this->getSendResult(['debug' => $f]);
+        $this->getSendResult(array('debug' => $f));
         fseek($f, 0);
         $contents = stream_get_contents($f);
         $this->assertContains('<GET http://127.0.0.1:8126/> [CONNECT]', $contents);
@@ -371,10 +377,10 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $called = false;
         $this->queueRes();
         $buffer = fopen('php://temp', 'r+');
-        $this->getSendResult([
+        $this->getSendResult(array(
             'progress' => function () use (&$called) { $called = true; },
             'debug' => $buffer,
-        ]);
+        ));
         fseek($buffer, 0);
         $contents = stream_get_contents($buffer);
         $this->assertContains('<GET http://127.0.0.1:8126/> [CONNECT]', $contents);
@@ -385,13 +391,13 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testEmitsProgressInformation()
     {
-        $called = [];
+        $called = array();
         $this->queueRes();
-        $this->getSendResult([
+        $this->getSendResult(array(
             'progress' => function () use (&$called) {
                 $called[] = func_get_args();
             },
-        ]);
+        ));
         $this->assertNotEmpty($called);
         $this->assertEquals(8, $called[0][0]);
         $this->assertEquals(0, $called[0][1]);
@@ -399,15 +405,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testEmitsProgressInformationAndDebugInformation()
     {
-        $called = [];
+        $called = array();
         $this->queueRes();
         $buffer = fopen('php://memory', 'w+');
-        $this->getSendResult([
+        $this->getSendResult(array(
             'debug'    => $buffer,
             'progress' => function () use (&$called) {
                 $called[] = func_get_args();
             },
-        ]);
+        ));
         $this->assertNotEmpty($called);
         $this->assertEquals(8, $called[0][0]);
         $this->assertEquals(0, $called[0][1]);
@@ -418,20 +424,20 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testPerformsShallowMergeOfCustomContextOptions()
     {
-        $res = $this->getSendResult([
-            'stream_context' => [
-                'http' => [
+        $res = $this->getSendResult(array(
+            'stream_context' => array(
+                'http' => array(
                     'request_fulluri' => true,
                     'method' => 'HEAD',
-                ],
-                'socket' => [
+                ),
+                'socket' => array(
                     'bindto' => '127.0.0.1:0',
-                ],
-                'ssl' => [
+                ),
+                'ssl' => array(
                     'verify_peer' => false,
-                ],
-            ],
-        ]);
+                ),
+            ),
+        ));
         $opts = stream_context_get_options($res->getBody()->detach());
         $this->assertEquals('HEAD', $opts['http']['method']);
         $this->assertTrue($opts['http']['request_fulluri']);
@@ -445,16 +451,17 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsuresThatStreamContextIsAnArray()
     {
-        $this->getSendResult(['stream_context' => 'foo']);
+        $this->getSendResult(array('stream_context' => 'foo'));
     }
 
     public function testDoesNotAddContentTypeByDefault()
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('PUT', Server::$url, ['Content-Length' => 3], 'foo');
-        $handler($request, []);
-        $req = Server::received()[0];
+        $request = new Request('PUT', Server::$url, array('Content-Length' => 3), 'foo');
+        call_user_func($handler, $request, array());
+        $received = Server::received();
+        $req = $received[0];
         $this->assertEquals('', $req->getHeaderLine('Content-Type'));
         $this->assertEquals(3, $req->getHeaderLine('Content-Length'));
     }
@@ -463,9 +470,10 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('PUT', Server::$url, [], 'foo');
-        $handler($request, []);
-        $req = Server::received()[0];
+        $request = new Request('PUT', Server::$url, array(), 'foo');
+        call_user_func($handler, $request, array());
+        $received = Server::received();
+        $req = $received[0];
         $this->assertEquals(3, $req->getHeaderLine('Content-Length'));
     }
 
@@ -473,20 +481,21 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->queueRes();
         $handler = new StreamHandler();
-        $request = new Request('PUT', Server::$url, [], '');
-        $handler($request, []);
-        $req = Server::received()[0];
+        $request = new Request('PUT', Server::$url, array(), '');
+        call_user_func($handler, $request, array());
+        $received = Server::received();
+        $req = $received[0];
         $this->assertEquals(0, $req->getHeaderLine('Content-Length'));
     }
 
     public function testSupports100Continue()
     {
         Server::flush();
-        $response = new Response(200, ['Test' => 'Hello', 'Content-Length' => '4'], 'test');
-        Server::enqueue([$response]);
-        $request = new Request('PUT', Server::$url, ['Expect' => '100-Continue'], 'test');
+        $response = new Response(200, array('Test' => 'Hello', 'Content-Length' => '4'), 'test');
+        Server::enqueue(array($response));
+        $request = new Request('PUT', Server::$url, array('Expect' => '100-Continue'), 'test');
         $handler = new StreamHandler();
-        $response = $handler($request, [])->wait();
+        $response = call_user_func($handler, $request, array())->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Hello', $response->getHeaderLine('Test'));
         $this->assertEquals('4', $response->getHeaderLine('Content-Length'));
@@ -496,11 +505,11 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     public function testDoesSleep()
     {
         $response = new response(200);
-        Server::enqueue([$response]);
+        Server::enqueue(array($response));
         $a = new StreamHandler();
         $request = new Request('GET', Server::$url);
         $s = microtime(true);
-        $a($request, ['delay' => 0.1])->wait();
+        call_user_func($a, $request, array('delay' => 0.1))->wait();
         $this->assertGreaterThan(0.0001, microtime(true) - $s);
     }
 
@@ -511,55 +520,57 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $req = new Request('GET', Server::$url);
         $handler = new StreamHandler();
-        $handler($req, ['on_headers' => 'error!']);
+        call_user_func($handler, $req, array('on_headers' => 'error!'));
     }
 
     /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
+     * @expectedException \Hough\Guzzle6\Exception\RequestException
      * @expectedExceptionMessage An error was encountered during the on_headers event
      * @expectedExceptionMessage test
      */
     public function testRejectsPromiseWhenOnHeadersFails()
     {
         Server::flush();
-        Server::enqueue([
-            new Response(200, ['X-Foo' => 'bar'], 'abc 123')
-        ]);
+        Server::enqueue(array(
+            new Response(200, array('X-Foo' => 'bar'), 'abc 123')
+        ));
         $req = new Request('GET', Server::$url);
         $handler = new StreamHandler();
-        $promise = $handler($req, [
+        $promise = call_user_func($handler, $req, array(
             'on_headers' => function () {
                 throw new \Exception('test');
             }
-        ]);
+        ));
         $promise->wait();
     }
 
     public function testSuccessfullyCallsOnHeadersBeforeWritingToSink()
     {
         Server::flush();
-        Server::enqueue([
-            new Response(200, ['X-Foo' => 'bar'], 'abc 123')
-        ]);
+        Server::enqueue(array(
+            new Response(200, array('X-Foo' => 'bar'), 'abc 123')
+        ));
         $req = new Request('GET', Server::$url);
         $got = null;
 
         $stream = Psr7\stream_for();
-        $stream = FnStream::decorate($stream, [
-            'write' => function ($data) use ($stream, &$got) {
-                $this->assertNotNull($got);
+        $assertNotNull = array($this, 'assertNotNull');
+        $stream = FnStream::decorate($stream, array(
+            'write' => function ($data) use ($stream, &$got, $assertNotNull) {
+                call_user_func($assertNotNull, $got);
                 return $stream->write($data);
             }
-        ]);
+        ));
 
         $handler = new StreamHandler();
-        $promise = $handler($req, [
+        $assertEquals = array($this, 'assertEquals');
+        $promise = call_user_func($handler, $req, array(
             'sink'       => $stream,
-            'on_headers' => function (ResponseInterface $res) use (&$got) {
+            'on_headers' => function (ResponseInterface $res) use (&$got, $assertEquals) {
                 $got = $res;
-                $this->assertEquals('bar', $res->getHeaderLine('X-Foo'));
+                call_user_func($assertEquals, 'bar', $res->getHeaderLine('X-Foo'));
             }
-        ]);
+        ));
 
         $response = $promise->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -570,15 +581,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     public function testInvokesOnStatsOnSuccess()
     {
         Server::flush();
-        Server::enqueue([new Psr7\Response(200)]);
+        Server::enqueue(array(new Psr7\Response(200)));
         $req = new Psr7\Request('GET', Server::$url);
         $gotStats = null;
         $handler = new StreamHandler();
-        $promise = $handler($req, [
+        $promise = call_user_func($handler, $req, array(
             'on_stats' => function (TransferStats $stats) use (&$gotStats) {
                 $gotStats = $stats;
             }
-        ]);
+        ));
         $response = $promise->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(200, $gotStats->getResponse()->getStatusCode());
@@ -598,13 +609,13 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $req = new Psr7\Request('GET', 'http://127.0.0.1:123');
         $gotStats = null;
         $handler = new StreamHandler();
-        $promise = $handler($req, [
+        $promise = call_user_func($handler, $req, array(
             'connect_timeout' => 0.001,
             'timeout' => 0.001,
             'on_stats' => function (TransferStats $stats) use (&$gotStats) {
                 $gotStats = $stats;
             }
-        ]);
+        ));
         $promise->wait(false);
         $this->assertFalse($gotStats->hasResponse());
         $this->assertEquals(
@@ -617,7 +628,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertInternalType('float', $gotStats->getTransferTime());
         $this->assertInstanceOf(
-            ConnectException::class,
+            '\Hough\Guzzle6\Exception\ConnectException',
             $gotStats->getHandlerErrorData()
         );
     }
@@ -625,14 +636,14 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     public function testStreamIgnoresZeroTimeout()
     {
         Server::flush();
-        Server::enqueue([new Psr7\Response(200)]);
+        Server::enqueue(array(new Psr7\Response(200)));
         $req = new Psr7\Request('GET', Server::$url);
         $gotStats = null;
         $handler = new StreamHandler();
-        $promise = $handler($req, [
+        $promise = call_user_func($handler, $req, array(
             'connect_timeout' => 10,
             'timeout' => 0
-        ]);
+        ));
         $response = $promise->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -640,15 +651,15 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     public function testDrainsResponseAndReadsAllContentWhenContentLengthIsZero()
     {
         Server::flush();
-        Server::enqueue([
-            new Response(200, [
+        Server::enqueue(array(
+            new Response(200, array(
                 'Foo' => 'Bar',
                 'Content-Length' => '0',
-            ], 'hi there... This has a lot of data!')
-        ]);
+            ), 'hi there... This has a lot of data!')
+        ));
         $handler = new StreamHandler();
         $request = new Request('GET', Server::$url);
-        $response = $handler($request, [])->wait();
+        $response = call_user_func($handler, $request, array())->wait();
         $body = $response->getBody();
         $stream = $body->detach();
         $this->assertEquals('hi there... This has a lot of data!', stream_get_contents($stream));

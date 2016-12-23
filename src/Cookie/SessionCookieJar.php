@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp\Cookie;
+namespace Hough\Guzzle6\Cookie;
 
 /**
  * Persists cookies in the client session
@@ -40,7 +40,7 @@ class SessionCookieJar extends CookieJar
      */
     public function save()
     {
-        $json = [];
+        $json = array();
         foreach ($this as $cookie) {
             /** @var SetCookie $cookie */
             if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {

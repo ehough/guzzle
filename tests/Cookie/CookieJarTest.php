@@ -1,13 +1,13 @@
 <?php
-namespace GuzzleHttp\Tests\CookieJar;
+namespace Hough\Tests\CookieJar;
 
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Hough\Guzzle6\Cookie\CookieJar;
+use Hough\Guzzle6\Cookie\SetCookie;
+use Hough\Psr7\Request;
+use Hough\Psr7\Response;
 
 /**
- * @covers GuzzleHttp\Cookie\CookieJar
+ * @covers \Hough\Guzzle6\Cookie\CookieJar
  */
 class CookieJarTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,19 +21,19 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
 
     protected function getTestCookies()
     {
-        return [
-            new SetCookie(['Name' => 'foo',  'Value' => 'bar', 'Domain' => 'foo.com', 'Path' => '/',    'Discard' => true]),
-            new SetCookie(['Name' => 'test', 'Value' => '123', 'Domain' => 'baz.com', 'Path' => '/foo', 'Expires' => 2]),
-            new SetCookie(['Name' => 'you',  'Value' => '123', 'Domain' => 'bar.com', 'Path' => '/boo', 'Expires' => time() + 1000])
-        ];
+        return array(
+            new SetCookie(array('Name' => 'foo',  'Value' => 'bar', 'Domain' => 'foo.com', 'Path' => '/',    'Discard' => true)),
+            new SetCookie(array('Name' => 'test', 'Value' => '123', 'Domain' => 'baz.com', 'Path' => '/foo', 'Expires' => 2)),
+            new SetCookie(array('Name' => 'you',  'Value' => '123', 'Domain' => 'bar.com', 'Path' => '/boo', 'Expires' => time() + 1000))
+        );
     }
 
     public function testCreatesFromArray()
     {
-        $jar = CookieJar::fromArray([
+        $jar = CookieJar::fromArray(array(
             'foo' => 'bar',
             'baz' => 'bam'
-        ], 'example.com');
+        ), 'example.com');
         $this->assertCount(2, $jar);
     }
 
@@ -42,18 +42,18 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
      */
     public function getCookiesDataProvider()
     {
-        return [
-            [['foo', 'baz', 'test', 'muppet', 'googoo'], '', '', '', false],
-            [['foo', 'baz', 'muppet', 'googoo'], '', '', '', true],
-            [['googoo'], 'www.example.com', '', '', false],
-            [['muppet', 'googoo'], 'test.y.example.com', '', '', false],
-            [['foo', 'baz'], 'example.com', '', '', false],
-            [['muppet'], 'x.y.example.com', '/acme/', '', false],
-            [['muppet'], 'x.y.example.com', '/acme/test/', '', false],
-            [['googoo'], 'x.y.example.com', '/test/acme/test/', '', false],
-            [['foo', 'baz'], 'example.com', '', '', false],
-            [['baz'], 'example.com', '', 'baz', false],
-        ];
+        return array(
+            array(array('foo', 'baz', 'test', 'muppet', 'googoo'), '', '', '', false),
+            array(array('foo', 'baz', 'muppet', 'googoo'), '', '', '', true),
+            array(array('googoo'), 'www.example.com', '', '', false),
+            array(array('muppet', 'googoo'), 'test.y.example.com', '', '', false),
+            array(array('foo', 'baz'), 'example.com', '', '', false),
+            array(array('muppet'), 'x.y.example.com', '/acme/', '', false),
+            array(array('muppet'), 'x.y.example.com', '/acme/test/', '', false),
+            array(array('googoo'), 'x.y.example.com', '/test/acme/test/', '', false),
+            array(array('foo', 'baz'), 'example.com', '', '', false),
+            array(array('baz'), 'example.com', '', 'baz', false),
+        );
     }
 
     public function testStoresAndRetrievesCookies()
@@ -76,7 +76,7 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
         }
         $this->jar->clearSessionCookies();
         $this->assertEquals(
-            [$cookies[1], $cookies[2]],
+            array($cookies[1], $cookies[2]),
             $this->jar->getIterator()->getArrayCopy()
         );
     }
@@ -248,45 +248,45 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
      */
     public function testReturnsCookiesMatchingRequests($url, $cookies)
     {
-        $bag = [
-            new SetCookie([
+        $bag = array(
+            new SetCookie(array(
                 'Name'    => 'foo',
                 'Value'   => 'bar',
                 'Domain'  => 'example.com',
                 'Path'    => '/',
                 'Max-Age' => '86400',
                 'Secure'  => true
-            ]),
-            new SetCookie([
+            )),
+            new SetCookie(array(
                 'Name'    => 'baz',
                 'Value'   => 'foobar',
                 'Domain'  => 'example.com',
                 'Path'    => '/',
                 'Max-Age' => '86400',
                 'Secure'  => true
-            ]),
-            new SetCookie([
+            )),
+            new SetCookie(array(
                 'Name'    => 'test',
                 'Value'   => '123',
                 'Domain'  => 'www.foobar.com',
                 'Path'    => '/path/',
                 'Discard' => true
-            ]),
-            new SetCookie([
+            )),
+            new SetCookie(array(
                 'Name'    => 'muppet',
                 'Value'   => 'cookie_monster',
                 'Domain'  => '.y.example.com',
                 'Path'    => '/acme/',
                 'Expires' => time() + 86400
-            ]),
-            new SetCookie([
+            )),
+            new SetCookie(array(
                 'Name'    => 'googoo',
                 'Value'   => 'gaga',
                 'Domain'  => '.example.com',
                 'Path'    => '/test/acme/',
                 'Max-Age' => 1500
-            ])
-        ];
+            ))
+        );
 
         foreach ($bag as $cookie) {
             $this->jar->setCookie($cookie);
@@ -304,19 +304,19 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
     public function testThrowsExceptionWithStrictMode()
     {
         $a = new CookieJar(true);
-        $a->setCookie(new SetCookie(['Name' => "abc\n", 'Value' => 'foo', 'Domain' => 'bar']));
+        $a->setCookie(new SetCookie(array('Name' => "abc\n", 'Value' => 'foo', 'Domain' => 'bar')));
     }
 
     public function testDeletesCookiesByName()
     {
         $cookies = $this->getTestCookies();
-        $cookies[] = new SetCookie([
+        $cookies[] = new SetCookie(array(
             'Name' => 'other',
             'Value' => '123',
             'Domain' => 'bar.com',
             'Path' => '/boo',
             'Expires' => time() + 1000
-        ]);
+        ));
         $jar = new CookieJar();
         foreach ($cookies as $cookie) {
             $jar->setCookie($cookie);
@@ -327,7 +327,7 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
         $names = array_map(function (SetCookie $c) {
             return $c->getName();
         }, $jar->getIterator()->getArrayCopy());
-        $this->assertEquals(['foo', 'test', 'you'], $names);
+        $this->assertEquals(array('foo', 'test', 'you'), $names);
     }
 
     public function testCanConvertToAndLoadFromArray()

@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Test\Handler;
+namespace Hough\Test\Guzzle6\Handler;
 
-use GuzzleHttp\Handler\EasyHandle;
-use GuzzleHttp\Psr7;
+use Hough\Guzzle6\Handler\EasyHandle;
+use Hough\Psr7;
 
 /**
- * @covers \GuzzleHttp\Handler\EasyHandle
+ * @covers \Hough\Guzzle6\Handler\EasyHandle
  */
 class EasyHandleTest extends \PHPUnit_Framework_TestCase
 {

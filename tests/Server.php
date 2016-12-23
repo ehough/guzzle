@@ -1,8 +1,8 @@
 <?php
-namespace GuzzleHttp\Tests;
+namespace Hough\Tests\Guzzle6;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7;
+use Hough\Guzzle6\Client;
+use Hough\Psr7;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -48,7 +48,7 @@ class Server
      */
     public static function enqueue($responses)
     {
-        $data = [];
+        $data = array();
         foreach ((array) $responses as $response) {
             if (!($response instanceof ResponseInterface)) {
                 throw new \Exception('Invalid response given.');
@@ -57,17 +57,17 @@ class Server
                 return implode(' ,', $h);
             }, $response->getHeaders());
 
-            $data[] = [
+            $data[] = array(
                 'status'  => (string) $response->getStatusCode(),
                 'reason'  => $response->getReasonPhrase(),
                 'headers' => $headers,
                 'body'    => base64_encode((string) $response->getBody())
-            ];
+            );
         }
 
-        self::getClient()->request('PUT', 'guzzle-server/responses', [
+        self::getClient()->request('PUT', 'guzzle-server/responses', array(
             'json' => $data
-        ]);
+        ));
     }
 
     /**
@@ -79,7 +79,7 @@ class Server
     public static function received()
     {
         if (!self::$started) {
-            return [];
+            return array();
         }
 
         $response = self::getClient()->request('GET', 'guzzle-server/requests');
@@ -150,10 +150,10 @@ class Server
     private static function isListening()
     {
         try {
-            self::getClient()->request('GET', 'guzzle-server/perf', [
+            self::getClient()->request('GET', 'guzzle-server/perf', array(
                 'connect_timeout' => 5,
                 'timeout'         => 5
-            ]);
+            ));
             return true;
         } catch (\Exception $e) {
             return false;
@@ -163,10 +163,10 @@ class Server
     private static function getClient()
     {
         if (!self::$client) {
-            self::$client = new Client([
+            self::$client = new Client(array(
                 'base_uri' => self::$url,
                 'sync'     => true,
-            ]);
+            ));
         }
 
         return self::$client;

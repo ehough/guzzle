@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp;
+namespace Hough\Guzzle6;
 
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
@@ -69,11 +69,12 @@ class MessageFormatter
         ResponseInterface $response = null,
         \Exception $error = null
     ) {
-        $cache = [];
+        $cache = array();
 
+        $headersFuncton = array($this, '__headers');
         return preg_replace_callback(
             '/{\s*([A-Za-z_\-\.0-9]+)\s*}/',
-            function (array $matches) use ($request, $response, $error, &$cache) {
+            function (array $matches) use ($request, $response, $error, &$cache, $headersFuncton) {
 
                 if (isset($cache[$matches[1]])) {
                     return $cache[$matches[1]];
@@ -82,16 +83,16 @@ class MessageFormatter
                 $result = '';
                 switch ($matches[1]) {
                     case 'request':
-                        $result = Psr7\str($request);
+                        $result = \Hough\Psr7\str($request);
                         break;
                     case 'response':
-                        $result = $response ? Psr7\str($response) : '';
+                        $result = $response ? \Hough\Psr7\str($response) : '';
                         break;
                     case 'req_headers':
                         $result = trim($request->getMethod()
                                 . ' ' . $request->getRequestTarget())
                             . ' HTTP/' . $request->getProtocolVersion() . "\r\n"
-                            . $this->headers($request);
+                            . call_user_func($headersFuncton, $request);
                         break;
                     case 'res_headers':
                         $result = $response ?
@@ -100,7 +101,7 @@ class MessageFormatter
                                 $response->getProtocolVersion(),
                                 $response->getStatusCode(),
                                 $response->getReasonPhrase()
-                            ) . "\r\n" . $this->headers($response)
+                            ) . "\r\n" . call_user_func($headersFuncton, $response)
                             : 'NULL';
                         break;
                     case 'req_body':
@@ -170,7 +171,10 @@ class MessageFormatter
         );
     }
 
-    private function headers(MessageInterface $message)
+    /**
+     * @internal
+     */
+    public function __headers(MessageInterface $message)
     {
         $result = '';
         foreach ($message->getHeaders() as $name => $values) {

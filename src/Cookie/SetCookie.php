@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp\Cookie;
+namespace Hough\Guzzle6\Cookie;
 
 /**
  * Set-Cookie object
@@ -7,7 +7,7 @@ namespace GuzzleHttp\Cookie;
 class SetCookie
 {
     /** @var array */
-    private static $defaults = [
+    private static $defaults = array(
         'Name'     => null,
         'Value'    => null,
         'Domain'   => null,
@@ -17,7 +17,7 @@ class SetCookie
         'Secure'   => false,
         'Discard'  => false,
         'HttpOnly' => false
-    ];
+    );
 
     /** @var array Cookie data */
     private $data;
@@ -70,7 +70,7 @@ class SetCookie
     /**
      * @param array $data Array of cookie data provided by a Cookie parser
      */
-    public function __construct(array $data = [])
+    public function __construct(array $data = array())
     {
         $this->data = array_replace(self::$defaults, $data);
         // Extract the Expires value and turn it into a UNIX timestamp if needed

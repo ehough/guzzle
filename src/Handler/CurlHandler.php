@@ -1,7 +1,7 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Psr7;
+use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -23,7 +23,7 @@ class CurlHandler
      *
      * @param array $options Array of options to use with the handler
      */
-    public function __construct(array $options = [])
+    public function __construct(array $options = array())
     {
         $this->factory = isset($options['handle_factory'])
             ? $options['handle_factory']

@@ -1,9 +1,9 @@
 <?php
-namespace GuzzleHttp\Handler;
+namespace Hough\Guzzle6\Handler;
 
-use GuzzleHttp\Promise as P;
-use GuzzleHttp\Promise\Promise;
-use GuzzleHttp\Psr7;
+use Hough\Promise as P;
+use Hough\Promise\Promise;
+use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -21,8 +21,8 @@ class CurlMultiHandler
     private $factory;
     private $selectTimeout;
     private $active;
-    private $handles = [];
-    private $delays = [];
+    private $handles = array();
+    private $delays = array();
 
     /**
      * This handler accepts the following options:
@@ -33,7 +33,7 @@ class CurlMultiHandler
      *
      * @param array $options
      */
-    public function __construct(array $options = [])
+    public function __construct(array $options = array())
     {
         $this->factory = isset($options['handle_factory'])
             ? $options['handle_factory'] : new CurlFactory(50);
@@ -63,14 +63,20 @@ class CurlMultiHandler
         $easy = $this->factory->create($request, $options);
         $id = (int) $easy->handle;
 
+        $cancelCallback = array($this, '__cancelHandle');
         $promise = new Promise(
-            [$this, 'execute'],
-            function () use ($id) { return $this->cancel($id); }
+            array($this, 'execute'),
+            function () use ($id, $cancelCallback) { call_user_func($cancelCallback, $id); }
         );
 
-        $this->addRequest(['easy' => $easy, 'deferred' => $promise]);
+        $this->addRequest(array('easy' => $easy, 'deferred' => $promise));
 
         return $promise;
+    }
+
+    public function __cancelHandle($id)
+    {
+        $this->cancel($id);
     }
 
     /**

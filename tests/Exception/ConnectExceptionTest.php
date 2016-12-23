@@ -1,11 +1,11 @@
 <?php
-namespace GuzzleHttp\Tests\Event;
+namespace Hough\Tests\Event;
 
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Psr7\Request;
+use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Psr7\Request;
 
 /**
- * @covers GuzzleHttp\Exception\ConnectException
+ * @covers \Hough\Guzzle6\Exception\ConnectException
  */
 class ConnectExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,12 +13,13 @@ class ConnectExceptionTest extends \PHPUnit_Framework_TestCase
     {
         $req = new Request('GET', '/');
         $prev = new \Exception();
-        $e = new ConnectException('foo', $req, $prev, ['foo' => 'bar']);
+        $e = new ConnectException('foo', $req, $prev, array('foo' => 'bar'));
         $this->assertSame($req, $e->getRequest());
         $this->assertNull($e->getResponse());
         $this->assertFalse($e->hasResponse());
         $this->assertEquals('foo', $e->getMessage());
-        $this->assertEquals('bar', $e->getHandlerContext()['foo']);
+        $ctx = $e->getHandlerContext();
+        $this->assertEquals('bar', $ctx['foo']);
         $this->assertSame($prev, $e->getPrevious());
     }
 }
