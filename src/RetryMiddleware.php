@@ -73,33 +73,21 @@ class RetryMiddleware
 
     private function onFulfilled(RequestInterface $req, array $options)
     {
-        return function ($value) use ($req, $options) {
-            if (!call_user_func(
-                $this->decider,
-                $options['retries'],
-                $req,
-                $value,
-                null
-            )) {
-                return $value;
-            }
-            return $this->doRetry($req, $options, $value);
+        $callback = array($this, '__onFulfilled');
+
+        return function ($value) use ($req, $options, $callback) {
+
+            return call_user_func($callback, $value, $req, $options);
         };
     }
 
     private function onRejected(RequestInterface $req, array $options)
     {
-        return function ($reason) use ($req, $options) {
-            if (!call_user_func(
-                $this->decider,
-                $options['retries'],
-                $req,
-                null,
-                $reason
-            )) {
-                return new RejectedPromise($reason);
-            }
-            return $this->doRetry($req, $options);
+        $callback = array($this, '__onRejected');
+
+        return function ($reason) use ($req, $options, $callback) {
+
+            return call_user_func($callback, $reason, $req, $options);
         };
     }
 
@@ -108,5 +96,39 @@ class RetryMiddleware
         $options['delay'] = call_user_func($this->delay, ++$options['retries'], $response);
 
         return call_user_func($this, $request, $options);
+    }
+
+    /**
+     * @internal
+     */
+    public function __onFulfilled($value, RequestInterface $req, $options)
+    {
+        if (!call_user_func(
+            $this->decider,
+            $options['retries'],
+            $req,
+            $value,
+            null
+        )) {
+            return $value;
+        }
+        return $this->doRetry($req, $options, $value);
+    }
+
+    /**
+     * @internal
+     */
+    public function __onRejected($reason, RequestInterface $req, $options)
+    {
+        if (!call_user_func(
+            $this->decider,
+            $options['retries'],
+            $req,
+            null,
+            $reason
+        )) {
+            return new RejectedPromise($reason);
+        }
+        return $this->doRetry($req, $options);
     }
 }

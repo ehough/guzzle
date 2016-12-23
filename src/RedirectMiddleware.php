@@ -65,9 +65,10 @@ class RedirectMiddleware
             return call_user_func($fn, $request, $options);
         }
 
+        $checkRedirect = array($this, 'checkRedirect');
         return call_user_func($fn, $request, $options)
-            ->then(function (ResponseInterface $response) use ($request, $options) {
-                return $this->checkRedirect($request, $options, $response);
+            ->then(function (ResponseInterface $response) use ($request, $options, $checkRedirect) {
+                return call_user_func($checkRedirect, $request, $options, $response);
             });
     }
 
@@ -117,14 +118,15 @@ class RedirectMiddleware
 
     private function withTracking(PromiseInterface $promise, $uri)
     {
+        $historyHeader = self::HISTORY_HEADER;
         return $promise->then(
-            function (ResponseInterface $response) use ($uri) {
+            function (ResponseInterface $response) use ($uri, $historyHeader) {
                 // Note that we are pushing to the front of the list as this
                 // would be an earlier response than what is currently present
                 // in the history header.
-                $header = $response->getHeader(self::HISTORY_HEADER);
+                $header = $response->getHeader($historyHeader);
                 array_unshift($header, $uri);
-                return $response->withHeader(self::HISTORY_HEADER, $header);
+                return $response->withHeader($historyHeader, $header);
             }
         );
     }

@@ -71,9 +71,10 @@ class MessageFormatter
     ) {
         $cache = array();
 
+        $headersFuncton = array($this, 'headers');
         return preg_replace_callback(
             '/{\s*([A-Za-z_\-\.0-9]+)\s*}/',
-            function (array $matches) use ($request, $response, $error, &$cache) {
+            function (array $matches) use ($request, $response, $error, &$cache, $headersFuncton) {
 
                 if (isset($cache[$matches[1]])) {
                     return $cache[$matches[1]];
@@ -91,7 +92,7 @@ class MessageFormatter
                         $result = trim($request->getMethod()
                                 . ' ' . $request->getRequestTarget())
                             . ' HTTP/' . $request->getProtocolVersion() . "\r\n"
-                            . $this->headers($request);
+                            . call_user_func($headersFuncton, $request);
                         break;
                     case 'res_headers':
                         $result = $response ?
@@ -100,7 +101,7 @@ class MessageFormatter
                                 $response->getProtocolVersion(),
                                 $response->getStatusCode(),
                                 $response->getReasonPhrase()
-                            ) . "\r\n" . $this->headers($response)
+                            ) . "\r\n" . call_user_func($headersFuncton, $response)
                             : 'NULL';
                         break;
                     case 'req_body':
