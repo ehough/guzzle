@@ -76,7 +76,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::flush();
         Server::enqueue(array(new Psr7\Response()));
         $a = new Handler\CurlMultiHandler();
-        $response = $a(new Psr7\Request('HEAD', Server::$url), array());
+        $response = call_user_func($a, new Psr7\Request('HEAD', Server::$url), array());
         $response->wait();
         $this->assertEquals(true, $_SERVER['_curl'][CURLOPT_NOBODY]);
         $checks = array(CURLOPT_WRITEFUNCTION, CURLOPT_READFUNCTION, CURLOPT_INFILE);
@@ -93,7 +93,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::enqueue(array(new Psr7\Response()));
         $a = new Handler\CurlMultiHandler();
         $req = new Psr7\Request('GET', Server::$url);
-        $a($req, array('curl' => array(CURLOPT_LOW_SPEED_LIMIT => 10)));
+        call_user_func($a, $req, array('curl' => array(CURLOPT_LOW_SPEED_LIMIT => 10)));
         $this->assertEquals(10, $_SERVER['_curl'][CURLOPT_LOW_SPEED_LIMIT]);
     }
 
@@ -103,7 +103,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::enqueue(array(new Psr7\Response()));
         $a = new Handler\CurlMultiHandler();
         $req = new Psr7\Request('GET', Server::$url);
-        $a($req, array('curl' => array(CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_0)));
+        call_user_func($a, $req, array('curl' => array(CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_0)));
         $this->assertEquals(CURL_HTTP_VERSION_1_0, $_SERVER['_curl'][CURLOPT_HTTP_VERSION]);
     }
 
@@ -248,7 +248,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::flush();
         Server::enqueue(array(new Psr7\Response()));
         $a = new Handler\CurlMultiHandler();
-        $response = $a(new Psr7\Request('HEAD', Server::$url), array('debug' => $res));
+        $response = call_user_func($a, new Psr7\Request('HEAD', Server::$url), array('debug' => $res));
         $response->wait();
         rewind($res);
         $output = str_replace("\r", '', stream_get_contents($res));
@@ -264,7 +264,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $a = new Handler\CurlMultiHandler();
         $called = array();
         $request = new Psr7\Request('HEAD', Server::$url);
-        $response = $a($request, array(
+        $response = call_user_func($a, $request, array(
             'progress' => function () use (&$called) {
                 $called[] = func_get_args();
             },
@@ -294,7 +294,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url);
-        $response = $handler($request, array('decode_content' => true));
+        $response = call_user_func($handler, $request, array('decode_content' => true));
         $response = $response->wait();
         $this->assertEquals('test', (string) $response->getBody());
         $this->assertEquals('', $_SERVER['_curl'][CURLOPT_ENCODING]);
@@ -308,7 +308,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url);
-        $response = $handler($request, array('decode_content' => true));
+        $response = call_user_func($handler, $request, array('decode_content' => true));
         $response = $response->wait();
         $this->assertSame(
             'gzip',
@@ -325,7 +325,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url, array('Accept-Encoding' => 'gzip'));
-        $response = $handler($request, array('decode_content' => true));
+        $response = call_user_func($handler, $request, array('decode_content' => true));
         $response = $response->wait();
         $this->assertEquals('gzip', $_SERVER['_curl'][CURLOPT_ENCODING]);
         $received = Server::received();
@@ -341,7 +341,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $content = $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url);
-        $response = $handler($request, array('decode_content' => false));
+        $response = call_user_func($handler, $request, array('decode_content' => false));
         $response = $response->wait();
         $received = Server::received();
         $sent = $received[0];
@@ -355,7 +355,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::enqueue(array(new Psr7\Response()));
         $a = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url, array(), null, '1.0');
-        $a($request, array());
+        call_user_func($a, $request, array());
         $this->assertEquals(CURL_HTTP_VERSION_1_0, $_SERVER['_curl'][CURLOPT_HTTP_VERSION]);
     }
 
@@ -365,7 +365,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url);
-        $response = $handler($request, array(
+        $response = call_user_func($handler, $request, array(
             'decode_content' => true,
             'sink'           => $stream,
         ));
@@ -380,7 +380,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url);
-        $response = $handler($request, array(
+        $response = call_user_func($handler, $request, array(
             'decode_content' => true,
             'sink'           => $stream,
         ));
@@ -394,7 +394,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('GET', Server::$url);
-        $response = $handler($request, array(
+        $response = call_user_func($handler, $request, array(
             'decode_content' => true,
             'sink'           => $tmpfile,
         ));
@@ -408,7 +408,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $this->addDecodeResponse();
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('PUT', Server::$url, array('Content-Length' => 3), 'foo');
-        $response = $handler($request, array());
+        $response = call_user_func($handler, $request, array());
         $response->wait();
         $received = Server::received();
         $sent = $received[0];
@@ -423,7 +423,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         Server::enqueue(array(new Psr7\Response()));
         $handler = new Handler\CurlMultiHandler();
         $request = new Psr7\Request('POST', Server::$url);
-        $response = $handler($request, array());
+        $response = call_user_func($handler, $request, array());
         $response->wait();
         $received = Server::received();
         $received = $received[0];
@@ -447,7 +447,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
             $easy = $factory->create($request, $options);
             return Handler\CurlFactory::finish($fn, $easy, $factory);
         };
-        $fn($request, array())->wait();
+        call_user_func($fn, $request, array())->wait();
     }
 
     public function testRetriesWhenBodyCanBeRewound()
@@ -488,7 +488,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
             return Handler\CurlFactory::finish($mock, $easy, $factory);
         };
         $mock = new Handler\MockHandler(array($fn, $fn, $fn));
-        $p = $mock(new Psr7\Request('PUT', Server::$url, array(), 'test'), array());
+        $p = call_user_func($mock, new Psr7\Request('PUT', Server::$url, array(), 'test'), array());
         $p->wait(false);
         $this->assertEquals(3, $call);
         $p->wait(true);
@@ -504,7 +504,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
             'Expect' => '100-Continue'
         ), 'test');
         $handler = new Handler\CurlMultiHandler();
-        $response = $handler($request, array())->wait();
+        $response = call_user_func($handler, $request, array())->wait();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('OK', $response->getReasonPhrase());
         $this->assertEquals('Hello', $response->getHeaderLine('Test'));
@@ -600,7 +600,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $req = new Psr7\Request('GET', Server::$url);
         $handler = new Handler\CurlHandler();
-        $handler($req, array('on_headers' => 'error!'));
+        call_user_func($handler, $req, array('on_headers' => 'error!'));
     }
 
     /**
@@ -616,7 +616,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         ));
         $req = new Psr7\Request('GET', Server::$url);
         $handler = new Handler\CurlHandler();
-        $promise = $handler($req, array(
+        $promise = call_user_func($handler, $req, array(
             'on_headers' => function () {
                 throw new \Exception('test');
             }
@@ -644,7 +644,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         ));
 
         $handler = new Handler\CurlHandler();
-        $promise = $handler($req, array(
+        $promise = call_user_func($handler, $req, array(
             'sink'       => $stream,
             'on_headers' => function (ResponseInterface $res) use (&$got, $assertEquals) {
                 $got = $res;
@@ -665,7 +665,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $req = new Psr7\Request('GET', Server::$url);
         $gotStats = null;
         $handler = new Handler\CurlHandler();
-        $promise = $handler($req, array(
+        $promise = call_user_func($handler, $req, array(
             'on_stats' => function (TransferStats $stats) use (&$gotStats) {
                 $gotStats = $stats;
             }
@@ -689,7 +689,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         $req = new Psr7\Request('GET', 'http://127.0.0.1:123');
         $gotStats = null;
         $handler = new Handler\CurlHandler();
-        $promise = $handler($req, array(
+        $promise = call_user_func($handler, $req, array(
             'connect_timeout' => 0.001,
             'timeout' => 0.001,
             'on_stats' => function (TransferStats $stats) use (&$gotStats) {

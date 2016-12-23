@@ -36,8 +36,8 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
                 }
             )
         );
-        $f = $m($h);
-        $f(new Request('GET', 'http://foo.com'), array('cookies' => $jar))->wait();
+        $f = call_user_func($m, $h);
+        call_user_func($f, new Request('GET', 'http://foo.com'), array('cookies' => $jar))->wait();
         $this->assertCount(1, $jar);
     }
 
@@ -48,8 +48,8 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $m = Middleware::httpErrors();
         $h = new MockHandler(array(new Response(404)));
-        $f = $m($h);
-        $p = $f(new Request('GET', 'http://foo.com'), array('http_errors' => true));
+        $f = call_user_func($m, $h);
+        $p = call_user_func($f, new Request('GET', 'http://foo.com'), array('http_errors' => true));
         $this->assertEquals('pending', $p->getState());
         $p->wait();
         $this->assertEquals('rejected', $p->getState());
@@ -62,8 +62,8 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $m = Middleware::httpErrors();
         $h = new MockHandler(array(new Response(500)));
-        $f = $m($h);
-        $p = $f(new Request('GET', 'http://foo.com'), array('http_errors' => true));
+        $f = call_user_func($m, $h);
+        $p = call_user_func($f, new Request('GET', 'http://foo.com'), array('http_errors' => true));
         $this->assertEquals('pending', $p->getState());
         $p->wait();
         $this->assertEquals('rejected', $p->getState());
@@ -76,9 +76,9 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $m = Middleware::history($container);
         $h = new MockHandler(array(new Response(200), new Response(201)));
-        $f = $m($h);
-        $p1 = $f(new Request('GET', 'http://foo.com'), array('headers' => array('foo' => 'bar')));
-        $p2 = $f(new Request('HEAD', 'http://foo.com'), array('headers' => array('foo' => 'baz')));
+        $f = call_user_func($m, $h);
+        $p1 = call_user_func($f, new Request('GET', 'http://foo.com'), array('headers' => array('foo' => 'bar')));
+        $p2 = call_user_func($f, new Request('HEAD', 'http://foo.com'), array('headers' => array('foo' => 'baz')));
         $p1->wait();
         $p2->wait();
         $this->assertCount(2, $container);
@@ -104,8 +104,8 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         $m = Middleware::history($container);
         $request = new Request('GET', 'http://foo.com');
         $h = new MockHandler(array(new RequestException('error', $request)));
-        $f = $m($h);
-        $f($request, array())->wait(false);
+        $f = call_user_func($m, $h);
+        call_user_func($f, $request, array())->wait(false);
         $this->assertCount(1, $container);
         $this->assertEquals('GET', $container[0]['request']->getMethod());
         $this->assertInstanceOf('\Hough\Guzzle6\Exception\RequestException', $container[0]['error']);
@@ -117,7 +117,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         $m = function ($handler) use (&$calls) {
             return function ($request, $options) use ($handler, &$calls) {
                 $calls[] = '2';
-                return $handler($request, $options);
+                return call_user_func($handler, $request, $options);
             };
         };
 
@@ -135,7 +135,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         $b->push($m2);
         $b->push($m);
         $comp = $b->resolve();
-        $p = $comp(new Request('GET', 'http://foo.com'), array());
+        $p = call_user_func($comp, new Request('GET', 'http://foo.com'), array());
         $this->assertEquals('123', implode('', $calls));
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $this->assertEquals(200, $p->wait()->getStatusCode());
@@ -155,7 +155,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
             return $request->withHeader('Bar', 'foo');
         }));
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com'), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com'), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
     }
 
@@ -167,7 +167,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
             return $response->withHeader('Bar', 'foo');
         }));
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com'), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com'), array());
         $p->wait();
         $this->assertEquals('foo', $p->wait()->getHeaderLine('Bar'));
     }
@@ -180,7 +180,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         $formatter = new MessageFormatter();
         $stack->push(Middleware::log($logger, $formatter));
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com'), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com'), array());
         $p->wait();
         $this->assertContains('"PUT / HTTP/1.1" 200', $logger->output);
     }
@@ -193,7 +193,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         $formatter = new MessageFormatter();
         $stack->push(Middleware::log($logger, $formatter, 'debug'));
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com'), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com'), array());
         $p->wait();
         $this->assertContains('"PUT / HTTP/1.1" 200', $logger->output);
         $this->assertContains('[debug]', $logger->output);
@@ -208,7 +208,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::log($logger, $formatter));
         $stack->push(Middleware::httpErrors());
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com'), array('http_errors' => true));
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com'), array('http_errors' => true));
         $p->wait(false);
         $this->assertContains('PUT http://www.google.com', $logger->output);
         $this->assertContains('404 Not Found', $logger->output);

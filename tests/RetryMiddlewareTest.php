@@ -29,7 +29,7 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
         };
         $m = Middleware::retry($decider, $delay);
         $h = new MockHandler(array(new Response(200), new Response(201), new Response(202)));
-        $f = $m($h);
+        $f = call_user_func($m, $h);
         $c = new Client(array('handler' => $f));
         $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $p->wait();
@@ -43,7 +43,7 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
         $decider = function () { return false; };
         $m = Middleware::retry($decider);
         $h = new MockHandler(array(new Response(200)));
-        $c = new Client(array('handler' => $m($h)));
+        $c = new Client(array('handler' => call_user_func($m, $h)));
         $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $this->assertEquals(200, $p->wait()->getStatusCode());
     }
@@ -57,7 +57,7 @@ class RetryMiddlewareTest extends \PHPUnit_Framework_TestCase
         };
         $m = Middleware::retry($decider);
         $h = new MockHandler(array(new \Exception(), new Response(201)));
-        $c = new Client(array('handler' => $m($h)));
+        $c = new Client(array('handler' => call_user_func($m, $h)));
         $p = $c->sendAsync(new Request('GET', 'http://test.com'), array());
         $this->assertEquals(201, $p->wait()->getStatusCode());
         $this->assertCount(2, $calls);

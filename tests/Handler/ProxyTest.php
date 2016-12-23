@@ -17,7 +17,7 @@ class ProxyTest extends \PHPUnit_Framework_TestCase
         $m1 = new MockHandler(array(function ($v) use (&$a) { $a = $v; }));
         $m2 = new MockHandler(array(function ($v) use (&$b) { $b = $v; }));
         $h = Proxy::wrapSync($m1, $m2);
-        $h(new Request('GET', 'http://foo.com'), array());
+        call_user_func($h, new Request('GET', 'http://foo.com'), array());
         $this->assertNotNull($a);
         $this->assertNull($b);
     }
@@ -28,7 +28,7 @@ class ProxyTest extends \PHPUnit_Framework_TestCase
         $m1 = new MockHandler(array(function ($v) use (&$a) { $a = $v; }));
         $m2 = new MockHandler(array(function ($v) use (&$b) { $b = $v; }));
         $h = Proxy::wrapSync($m1, $m2);
-        $h(new Request('GET', 'http://foo.com'), array(RequestOptions::SYNCHRONOUS => true));
+        call_user_func($h, new Request('GET', 'http://foo.com'), array(RequestOptions::SYNCHRONOUS => true));
         $this->assertNull($a);
         $this->assertNotNull($b);
     }
@@ -39,7 +39,7 @@ class ProxyTest extends \PHPUnit_Framework_TestCase
         $m1 = new MockHandler(array(function ($v) use (&$a) { $a = $v; }));
         $m2 = new MockHandler(array(function ($v) use (&$b) { $b = $v; }));
         $h = Proxy::wrapStreaming($m1, $m2);
-        $h(new Request('GET', 'http://foo.com'), array());
+        call_user_func($h, new Request('GET', 'http://foo.com'), array());
         $this->assertNotNull($a);
         $this->assertNull($b);
     }
@@ -50,7 +50,7 @@ class ProxyTest extends \PHPUnit_Framework_TestCase
         $m1 = new MockHandler(array(function ($v) use (&$a) { $a = $v; }));
         $m2 = new MockHandler(array(function ($v) use (&$b) { $b = $v; }));
         $h = Proxy::wrapStreaming($m1, $m2);
-        $h(new Request('GET', 'http://foo.com'), array('stream' => true));
+        call_user_func($h, new Request('GET', 'http://foo.com'), array('stream' => true));
         $this->assertNull($a);
         $this->assertNotNull($b);
     }

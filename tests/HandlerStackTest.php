@@ -43,7 +43,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->push($meths[3]);
         $builder->push($meths[4]);
         $composed = $builder->resolve();
-        $this->assertEquals('Hello - test123', $composed('test'));
+        $this->assertEquals('Hello - test123', call_user_func($composed, 'test'));
         $this->assertEquals(
             array(array('a', 'test'), array('b', 'test1'), array('c', 'test12')),
             $meths[0]
@@ -59,7 +59,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->unshift($meths[3]);
         $builder->unshift($meths[4]);
         $composed = $builder->resolve();
-        $this->assertEquals('Hello - test321', $composed('test'));
+        $this->assertEquals('Hello - test321', call_user_func($composed, 'test'));
         $this->assertEquals(
             array(array('c', 'test'), array('b', 'test3'), array('a', 'test32')),
             $meths[0]
@@ -78,7 +78,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $builder->push($meths[2]);
         $builder->remove($meths[3]);
         $composed = $builder->resolve();
-        $this->assertEquals('Hello - test1131', $composed('test'));
+        $this->assertEquals('Hello - test1131', call_user_func($composed, 'test'));
     }
 
     public function testCanPrintMiddleware()
@@ -155,7 +155,7 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $handler = HandlerStack::create($mock);
         $request = new Request('GET', 'http://foo.com/bar');
         $jar = new CookieJar();
-        $response = $handler($request, array(
+        $response = call_user_func($handler, $request, array(
             'allow_redirects' => true,
             'cookies' => $jar
         ))->wait();
@@ -172,21 +172,21 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
         $a = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
                 $calls[] = array('a', $v);
-                return $next($v . '1');
+                return call_user_func($next, $v . '1');
             };
         };
 
         $b = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
                 $calls[] = array('b', $v);
-                return $next($v . '2');
+                return call_user_func($next, $v . '2');
             };
         };
 
         $c = function (callable $next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
                 $calls[] = array('c', $v);
-                return $next($v . '3');
+                return call_user_func($next, $v . '3');
             };
         };
 

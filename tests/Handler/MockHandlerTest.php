@@ -17,7 +17,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response();
         $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $p = $mock($request, array());
+        $p = call_user_func($mock, $request, array());
         $this->assertSame($res, $p->wait());
     }
 
@@ -35,7 +35,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $mock = new MockHandler(array('a'));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array());
+        call_user_func($mock, $request, array());
     }
 
     public function testCanQueueExceptions()
@@ -43,7 +43,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $e = new \Exception('a');
         $mock = new MockHandler(array($e));
         $request = new Request('GET', 'http://example.com');
-        $p = $mock($request, array());
+        $p = call_user_func($mock, $request, array());
         try {
             $p->wait();
             $this->fail();
@@ -57,7 +57,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response();
         $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array('foo' => 'bar'));
+        call_user_func($mock, $request, array('foo' => 'bar'));
         $this->assertSame($request, $mock->getLastRequest());
         $this->assertEquals(array('foo' => 'bar'), $mock->getLastOptions());
     }
@@ -68,7 +68,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response(200, array(), 'TEST CONTENT');
         $mock = new MockHandler(array($res));
         $request = new Request('GET', '/');
-        $p = $mock($request, array('sink' => $filename));
+        $p = call_user_func($mock, $request, array('sink' => $filename));
         $p->wait();
 
         $this->assertFileExists($filename);
@@ -84,7 +84,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response(200, array(), 'TEST CONTENT');
         $mock = new MockHandler(array($res));
         $request = new Request('GET', '/');
-        $p = $mock($request, array('sink' => $file));
+        $p = call_user_func($mock, $request, array('sink' => $file));
         $p->wait();
 
         $this->assertFileExists($meta['uri']);
@@ -97,7 +97,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response(200, array(), 'TEST CONTENT');
         $mock = new MockHandler(array($res));
         $request = new Request('GET', '/');
-        $p = $mock($request, array('sink' => $stream));
+        $p = call_user_func($mock, $request, array('sink' => $stream));
         $p->wait();
 
         $this->assertFileExists($stream->getMetadata('uri'));
@@ -110,7 +110,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $fn = function ($req, $o) use ($r) { return $r; };
         $mock = new MockHandler(array($fn));
         $request = new Request('GET', 'http://example.com');
-        $p = $mock($request, array('foo' => 'bar'));
+        $p = call_user_func($mock, $request, array('foo' => 'bar'));
         $this->assertSame($r, $p->wait());
     }
 
@@ -122,7 +122,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response();
         $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array('on_headers' => 'error!'));
+        call_user_func($mock, $request, array('on_headers' => 'error!'));
     }
 
     /**
@@ -135,7 +135,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $res = new Response();
         $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $promise = $mock($request, array(
+        $promise = call_user_func($mock, $request, array(
             'on_headers' => function () {
                 throw new \Exception('test');
             }
@@ -150,7 +150,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
             $c = $v;
         });
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array())->wait();
+        call_user_func($mock, $request, array())->wait();
         $this->assertSame($res, $c);
     }
 
@@ -160,7 +160,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $c = null;
         $mock = new MockHandler(array($e), null, function ($v) use (&$c) { $c = $v; });
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array())->wait(false);
+        call_user_func($mock, $request, array())->wait(false);
         $this->assertSame($e, $c);
     }
 
@@ -171,7 +171,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $mock = new MockHandler();
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array());
+        call_user_func($mock, $request, array());
     }
 
     /**
@@ -182,7 +182,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $r = new Response(500);
         $mock = MockHandler::createWithMiddleware(array($r));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, array('http_errors' => true))->wait();
+        call_user_func($mock, $request, array('http_errors' => true))->wait();
     }
 
     public function testInvokesOnStatsFunctionForResponse()
@@ -194,7 +194,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $onStats = function (TransferStats $s) use (&$stats) {
             $stats = $s;
         };
-        $p = $mock($request, array('on_stats' => $onStats));
+        $p = call_user_func($mock, $request, array('on_stats' => $onStats));
         $p->wait();
         $this->assertSame($res, $stats->getResponse());
         $this->assertSame($request, $stats->getRequest());
@@ -210,7 +210,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $onStats = function (TransferStats $s) use (&$stats) {
             $stats = $s;
         };
-        $mock($request, array('on_stats' => $onStats))->wait(false);
+        call_user_func($mock, $request, array('on_stats' => $onStats))->wait(false);
         $this->assertSame($e, $stats->getHandlerErrorData());
         $this->assertSame(null, $stats->getResponse());
         $this->assertSame($request, $stats->getRequest());

@@ -22,7 +22,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com');
-        $promise = $handler($request, array());
+        $promise = call_user_func($handler, $request, array());
         $response = $promise->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -34,7 +34,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com');
-        $promise = $handler($request, array());
+        $promise = call_user_func($handler, $request, array());
         $response = $promise->wait();
         $this->assertEquals(304, $response->getStatusCode());
     }
@@ -49,7 +49,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com?a=b');
-        $promise = $handler($request, array(
+        $promise = call_user_func($handler, $request, array(
             'allow_redirects' => array('max' => 2)
         ));
         $response = $promise->wait();
@@ -67,7 +67,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com?a=b');
-        $promise = $handler($request, array(
+        $promise = call_user_func($handler, $request, array(
             'allow_redirects' => array('max' => 2)
         ));
         $response = $promise->wait();
@@ -91,7 +91,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com');
-        $promise = $handler($request, array('allow_redirects' => array('max' => 3)));
+        $promise = call_user_func($handler, $request, array('allow_redirects' => array('max' => 3)));
         $promise->wait();
     }
 
@@ -108,7 +108,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com');
-        $handler($request, array('allow_redirects' => array('max' => 3)))->wait();
+        call_user_func($handler, $request, array('allow_redirects' => array('max' => 3)))->wait();
     }
 
     public function testAddsRefererHeader()
@@ -121,7 +121,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com?a=b');
-        $promise = $handler($request, array(
+        $promise = call_user_func($handler, $request, array(
             'allow_redirects' => array('max' => 2, 'referer' => true)
         ));
         $promise->wait();
@@ -144,7 +144,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com?a=b');
-        $promise = $handler($request, array(
+        $promise = call_user_func($handler, $request, array(
             'allow_redirects' => array('track_redirects' => true)
         ));
         $response = $promise->wait(true);
@@ -168,7 +168,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack->push(Middleware::redirect());
         $handler = $stack->resolve();
         $request = new Request('GET', 'https://example.com?a=b');
-        $promise = $handler($request, array(
+        $promise = call_user_func($handler, $request, array(
             'allow_redirects' => array('max' => 2, 'referer' => true)
         ));
         $promise->wait();

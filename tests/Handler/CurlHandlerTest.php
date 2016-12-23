@@ -26,7 +26,7 @@ class CurlHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $handler = new CurlHandler();
         $request = new Request('GET', 'http://localhost:123');
-        $handler($request, array('timeout' => 0.001, 'connect_timeout' => 0.001))->wait();
+        call_user_func($handler, $request, array('timeout' => 0.001, 'connect_timeout' => 0.001))->wait();
     }
 
     public function testReusesHandles()
@@ -36,8 +36,8 @@ class CurlHandlerTest extends \PHPUnit_Framework_TestCase
         Server::enqueue(array($response, $response));
         $a = new CurlHandler();
         $request = new Request('GET', Server::$url);
-        $a($request, array());
-        $a($request, array());
+        call_user_func($a, $request, array());
+        call_user_func($a, $request, array());
     }
 
     public function testDoesSleep()
@@ -47,7 +47,7 @@ class CurlHandlerTest extends \PHPUnit_Framework_TestCase
         $a = new CurlHandler();
         $request = new Request('GET', Server::$url);
         $s = microtime(true);
-        $a($request, array('delay' => 0.1))->wait();
+        call_user_func($a, $request, array('delay' => 0.1))->wait();
         $this->assertGreaterThan(0.0001, microtime(true) - $s);
     }
 
@@ -57,7 +57,7 @@ class CurlHandlerTest extends \PHPUnit_Framework_TestCase
         $request = new Request('GET', 'http://localhost:123');
         $called = false;
         $assertArrayHasKey = array($this, 'assertArrayHasKey');
-        $p = $handler($request, array('timeout' => 0.001, 'connect_timeout' => 0.001))
+        $p = call_user_func($handler, $request, array('timeout' => 0.001, 'connect_timeout' => 0.001))
             ->otherwise(function (ConnectException $e) use (&$called, $assertArrayHasKey) {
                 $called = true;
                 call_user_func($assertArrayHasKey, 'errno', $e->getHandlerContext());
@@ -78,7 +78,7 @@ class CurlHandlerTest extends \PHPUnit_Framework_TestCase
             array('Content-Length' => 1000000),
             $stream
         );
-        $handler($request, array())->wait();
+        call_user_func($handler, $request, array())->wait();
         $received = Server::received();
         $received = $received[0];
         $this->assertEquals(1000000, $received->getHeaderLine('Content-Length'));

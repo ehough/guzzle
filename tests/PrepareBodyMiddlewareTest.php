@@ -26,7 +26,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), '123'), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com', array(), '123'), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -50,7 +50,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $body), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com', array(), $body), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -72,7 +72,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $bd), array());
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com', array(), $bd), array());
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
         $response = $p->wait();
         $this->assertEquals(200, $response->getStatusCode());
@@ -107,7 +107,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(new Request('PUT', 'http://www.google.com', array(), $bd), array(
+        $p = call_user_func($comp, new Request('PUT', 'http://www.google.com', array(), $bd), array(
             'expect' => $value
         ));
         $this->assertInstanceOf('\Hough\Promise\PromiseInterface', $p);
@@ -130,7 +130,7 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $stack = new HandlerStack($h);
         $stack->push($m);
         $comp = $stack->resolve();
-        $p = $comp(
+        $p = call_user_func($comp,
             new Request('PUT', 'http://www.google.com', array('Expect' => 'Foo'), $bd),
             array('expect' => true)
         );
