@@ -310,8 +310,8 @@ class StreamHandler
 
         $callback = array($this, '__open');
         return $this->createResource(
-            function () use ($request, &$http_response_header, $context, $callback) {
-                return call_user_func($callback, $request, $http_response_header, $context, $callback);
+            function () use ($request, $context, $callback) {
+                return call_user_func($callback, $request, $context);
             }
         );
     }
@@ -319,7 +319,7 @@ class StreamHandler
     /**
      * @internal
      */
-    public function __open(RequestInterface $request, &$http_response_header, $context)
+    public function __open(RequestInterface $request, $context)
     {
         $resource = fopen((string) $request->getUri()->withFragment(''), 'r', null, $context);
         $this->lastHeaders = $http_response_header;
