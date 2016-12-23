@@ -14,8 +14,8 @@ use Hough\Psr7\Request;
 use Hough\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerTrait;
 
 class MiddlewareTest extends \PHPUnit_Framework_TestCase
 {
@@ -218,9 +218,8 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
 /**
  * @internal
  */
-class Logger implements LoggerInterface
+class Logger extends AbstractLogger implements LoggerInterface
 {
-    use LoggerTrait;
     public $output;
 
     public function log($level, $message, array $context = array())
