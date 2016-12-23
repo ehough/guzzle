@@ -196,7 +196,7 @@ class HandlerStack
             }
 
             foreach (array_reverse($this->stack) as $fn) {
-                $prev = $fn[0]($prev);
+                $prev = call_user_func($fn[0], $prev);
             }
 
             $this->cached = $prev;
