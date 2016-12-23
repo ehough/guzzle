@@ -1,7 +1,7 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\TransferStats;
+use Hough\Guzzle\TransferStats;
 use Hough\Psr7;
 
 class TransferStatsTest extends \PHPUnit_Framework_TestCase

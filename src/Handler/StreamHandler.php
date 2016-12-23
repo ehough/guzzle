@@ -1,13 +1,13 @@
 <?php
-namespace Hough\Guzzle6\Handler;
+namespace Hough\Guzzle\Handler;
 
-use Hough\Guzzle6\Exception\RequestException;
-use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Guzzle\Exception\RequestException;
+use Hough\Guzzle\Exception\ConnectException;
 use Hough\Promise\FulfilledPromise;
 use Hough\Promise\RejectedPromise;
 use Hough\Promise\PromiseInterface;
 use Hough\Psr7;
-use Hough\Guzzle6\TransferStats;
+use Hough\Guzzle\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -103,7 +103,7 @@ class StreamHandler
         $ver = $exploded[1];
         $status = $parts[1];
         $reason = isset($parts[2]) ? $parts[2] : null;
-        $headers = \Hough\Guzzle6\headers_from_lines($hdrs);
+        $headers = \Hough\Guzzle\headers_from_lines($hdrs);
         list ($stream, $headers) = $this->checkDecode($options, $headers, $stream);
         $stream = Psr7\stream_for($stream);
         $sink = $stream;
@@ -158,7 +158,7 @@ class StreamHandler
     {
         // Automatically decode responses when instructed.
         if (!empty($options['decode_content'])) {
-            $normalizedKeys = \Hough\Guzzle6\normalize_header_keys($headers);
+            $normalizedKeys = \Hough\Guzzle\normalize_header_keys($headers);
             if (isset($normalizedKeys['content-encoding'])) {
                 $encoding = $headers[$normalizedKeys['content-encoding']];
                 if ($encoding[0] === 'gzip' || $encoding[0] === 'deflate') {
@@ -371,7 +371,7 @@ class StreamHandler
             $scheme = $request->getUri()->getScheme();
             if (isset($value[$scheme])) {
                 if (!isset($value['no'])
-                    || !\Hough\Guzzle6\is_host_in_noproxy(
+                    || !\Hough\Guzzle\is_host_in_noproxy(
                         $request->getUri()->getHost(),
                         $value['no']
                     )
@@ -401,7 +401,7 @@ class StreamHandler
             // PHP 5.6 or greater will find the system cert by default. When
             // < 5.6, use the Guzzle bundled cacert.
             if (PHP_VERSION_ID < 50600) {
-                $options['ssl']['cafile'] = \Hough\Guzzle6\default_ca_bundle();
+                $options['ssl']['cafile'] = \Hough\Guzzle\default_ca_bundle();
             }
         } elseif (is_string($value)) {
             $options['ssl']['cafile'] = $value;
@@ -477,7 +477,7 @@ class StreamHandler
         static $args = array('severity', 'message', 'message_code',
             'bytes_transferred', 'bytes_max');
 
-        $value = \Hough\Guzzle6\debug_resource($value);
+        $value = \Hough\Guzzle\debug_resource($value);
         $ident = $request->getMethod() . ' ' . $request->getUri()->withFragment('');
         $this->addNotification(
             $params,

@@ -1,13 +1,13 @@
 <?php
-namespace Hough\Test\Guzzle6\Handler;
+namespace Hough\Test\Guzzle\Handler;
 
-use Hough\Guzzle6\Handler\MockHandler;
-use Hough\Guzzle6\Handler\Proxy;
+use Hough\Guzzle\Handler\MockHandler;
+use Hough\Guzzle\Handler\Proxy;
 use Hough\Psr7\Request;
-use Hough\Guzzle6\RequestOptions;
+use Hough\Guzzle\RequestOptions;
 
 /**
- * @covers \Hough\Guzzle6\Handler\Proxy
+ * @covers \Hough\Guzzle\Handler\Proxy
  */
 class ProxyTest extends \PHPUnit_Framework_TestCase
 {

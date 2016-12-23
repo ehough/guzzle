@@ -1,10 +1,10 @@
 <?php
 namespace Hough\Tests\CookieJar;
 
-use Hough\Guzzle6\Cookie\SetCookie;
+use Hough\Guzzle\Cookie\SetCookie;
 
 /**
- * @covers \Hough\Guzzle6\Cookie\SetCookie
+ * @covers \Hough\Guzzle\Cookie\SetCookie
  */
 class SetCookieTest extends \PHPUnit_Framework_TestCase
 {

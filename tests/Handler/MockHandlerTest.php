@@ -1,14 +1,14 @@
 <?php
-namespace Hough\Test\Guzzle6\Handler;
+namespace Hough\Test\Guzzle\Handler;
 
-use Hough\Guzzle6\Handler\MockHandler;
+use Hough\Guzzle\Handler\MockHandler;
 use Hough\Promise\PromiseInterface;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
-use Hough\Guzzle6\TransferStats;
+use Hough\Guzzle\TransferStats;
 
 /**
- * @covers \Hough\Guzzle6\Handler\MockHandler
+ * @covers \Hough\Guzzle\Handler\MockHandler
  */
 class MockHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -126,7 +126,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\RequestException
+     * @expectedException \Hough\Guzzle\Exception\RequestException
      * @expectedExceptionMessage An error was encountered during the on_headers event
      * @expectedExceptionMessage test
      */
@@ -175,7 +175,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\BadResponseException
+     * @expectedException \Hough\Guzzle\Exception\BadResponseException
      */
     public function testCanCreateWithDefaultMiddleware()
     {

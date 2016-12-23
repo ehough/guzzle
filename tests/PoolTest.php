@@ -1,11 +1,11 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Exception\ClientException;
-use Hough\Guzzle6\Handler\MockHandler;
-use Hough\Guzzle6\HandlerStack;
-use Hough\Guzzle6\Pool;
-use Hough\Guzzle6\Client;
+use Hough\Guzzle\Exception\ClientException;
+use Hough\Guzzle\Handler\MockHandler;
+use Hough\Guzzle\HandlerStack;
+use Hough\Guzzle\Pool;
+use Hough\Guzzle\Client;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
 use Hough\Promise\Promise;
@@ -114,7 +114,7 @@ class PoolTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $results[0]->getStatusCode());
         $this->assertEquals(201, $results[1]->getStatusCode());
         $this->assertEquals(202, $results[2]->getStatusCode());
-        $this->assertInstanceOf('\Hough\Guzzle6\Exception\ClientException', $results[3]);
+        $this->assertInstanceOf('\Hough\Guzzle\Exception\ClientException', $results[3]);
     }
 
     public function testBatchesResultsWithCallbacks()

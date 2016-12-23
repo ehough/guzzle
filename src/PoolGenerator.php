@@ -1,10 +1,10 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
-use Hough\Promise\AbstractSimulatedGenerator;
+use Hough\Generators\AbstractGenerator;
 use Psr\Http\Message\RequestInterface;
 
-class PoolGenerator extends AbstractSimulatedGenerator
+class PoolGenerator extends AbstractGenerator
 {
     /**
      * @var \Iterator
@@ -33,7 +33,7 @@ class PoolGenerator extends AbstractSimulatedGenerator
      *
      * @return null|mixed
      */
-    protected function executePosition($position)
+    protected function resume($position)
     {
         if (!$this->_requests->valid()) {
 

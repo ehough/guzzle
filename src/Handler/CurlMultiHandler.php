@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6\Handler;
+namespace Hough\Guzzle\Handler;
 
 use Hough\Promise as P;
 use Hough\Promise\Promise;

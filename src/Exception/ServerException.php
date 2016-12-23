@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6\Exception;
+namespace Hough\Guzzle\Exception;
 
 /**
  * Exception when a server error is encountered (5xx codes)

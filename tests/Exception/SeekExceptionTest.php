@@ -1,7 +1,7 @@
 <?php
 namespace Hough\Tests\Exception;
 
-use Hough\Guzzle6\Exception\SeekException;
+use Hough\Guzzle\Exception\SeekException;
 use Hough\Psr7;
 
 class SeekExceptionTest extends \PHPUnit_Framework_TestCase

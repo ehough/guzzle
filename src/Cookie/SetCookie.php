@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6\Cookie;
+namespace Hough\Guzzle\Cookie;
 
 /**
  * Set-Cookie object

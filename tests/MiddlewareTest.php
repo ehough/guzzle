@@ -1,13 +1,13 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Cookie\CookieJar;
-use Hough\Guzzle6\Cookie\SetCookie;
-use Hough\Guzzle6\Exception\RequestException;
-use Hough\Guzzle6\Handler\MockHandler;
-use Hough\Guzzle6\HandlerStack;
-use Hough\Guzzle6\MessageFormatter;
-use Hough\Guzzle6\Middleware;
+use Hough\Guzzle\Cookie\CookieJar;
+use Hough\Guzzle\Cookie\SetCookie;
+use Hough\Guzzle\Exception\RequestException;
+use Hough\Guzzle\Handler\MockHandler;
+use Hough\Guzzle\HandlerStack;
+use Hough\Guzzle\MessageFormatter;
+use Hough\Guzzle\Middleware;
 use Hough\Promise\PromiseInterface;
 use Hough\Psr7;
 use Hough\Psr7\Request;
@@ -42,7 +42,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\ClientException
+     * @expectedException \Hough\Guzzle\Exception\ClientException
      */
     public function testThrowsExceptionOnHttpClientError()
     {
@@ -56,7 +56,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\ServerException
+     * @expectedException \Hough\Guzzle\Exception\ServerException
      */
     public function testThrowsExceptionOnHttpServerError()
     {
@@ -108,7 +108,7 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
         call_user_func($f, $request, array())->wait(false);
         $this->assertCount(1, $container);
         $this->assertEquals('GET', $container[0]['request']->getMethod());
-        $this->assertInstanceOf('\Hough\Guzzle6\Exception\RequestException', $container[0]['error']);
+        $this->assertInstanceOf('\Hough\Guzzle\Exception\RequestException', $container[0]['error']);
     }
 
     public function testTapsBeforeAndAfter()

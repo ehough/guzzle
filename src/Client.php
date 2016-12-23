@@ -1,7 +1,7 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
-use Hough\Guzzle6\Cookie\CookieJar;
+use Hough\Guzzle\Cookie\CookieJar;
 use Hough\Promise;
 use Hough\Psr7;
 use Psr\Http\Message\UriInterface;
@@ -57,7 +57,7 @@ class Client implements ClientInterface
      *
      * @param array $config Client configuration settings.
      *
-     * @see \Hough\Guzzle6\RequestOptions for a list of available request options.
+     * @see \Hough\Guzzle\RequestOptions for a list of available request options.
      */
     public function __construct(array $config = array())
     {
@@ -309,7 +309,7 @@ class Client implements ClientInterface
         }
 
         if (isset($options['json'])) {
-            $options['body'] = \Hough\Guzzle6\json_encode($options['json']);
+            $options['body'] = \Hough\Guzzle\json_encode($options['json']);
             unset($options['json']);
             $options['_conditional']['Content-Type'] = 'application/json';
         }

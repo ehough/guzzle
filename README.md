@@ -1,8 +1,8 @@
-# ehough/guzzle6
+# ehough/guzzle
 
-[![Build Status](https://travis-ci.org/ehough/guzzle6.svg?branch=develop)](https://travis-ci.org/ehough/guzzle6)
-[![Latest Stable Version](https://poser.pugx.org/ehough/guzzle6/v/stable)](https://packagist.org/packages/ehough/guzzle6)
-[![License](https://poser.pugx.org/ehough/guzzle6/license)](https://packagist.org/packages/ehough/guzzle6)
+[![Build Status](https://travis-ci.org/ehough/guzzle.svg?branch=develop)](https://travis-ci.org/ehough/guzzle)
+[![Latest Stable Version](https://poser.pugx.org/ehough/guzzle/v/stable)](https://packagist.org/packages/ehough/guzzle)
+[![License](https://poser.pugx.org/ehough/guzzle/license)](https://packagist.org/packages/ehough/guzzle)
 
 
 A PHP 5.3-compatible fork of [Guzzle 6](https://github.com/guzzle/guzzle).
@@ -14,7 +14,7 @@ Sadly, [60%](https://w3techs.com/technologies/details/pl-php/5/all) of all PHP w
 # How to Use This Fork
 
 Usage is identical to [`guzzle/guzzle`](https://github.com/guzzle/guzzle), except that the code in this library is 
-namespaced under `Hough\Guzzle6` instead of `GuzzleHttp`.
+namespaced under `Hough\Guzzle` instead of `GuzzleHttp`.
 
 --- 
 
@@ -33,7 +33,7 @@ trivial to integrate with web services.
 - Middleware system allows you to augment and compose client behavior.
 
 ```php
-$client = new \Hough\Guzzle6\Client();
+$client = new \Hough\Guzzle\Client();
 $res = $client->request('GET', 'https://api.github.com/repos/guzzle/guzzle');
 echo $res->getStatusCode();
 // 200

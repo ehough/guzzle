@@ -1,15 +1,15 @@
 <?php
-namespace Hough\Test\Guzzle6\Handler;
+namespace Hough\Test\Guzzle\Handler;
 
-use Hough\Guzzle6\Exception\ConnectException;
-use Hough\Guzzle6\Handler\CurlHandler;
+use Hough\Guzzle\Exception\ConnectException;
+use Hough\Guzzle\Handler\CurlHandler;
 use Hough\Psr7;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
-use Hough\Tests\Guzzle6\Server;
+use Hough\Guzzle\Test\Server;
 
 /**
- * @covers \Hough\Guzzle6\Handler\CurlHandler
+ * @covers \Hough\Guzzle\Handler\CurlHandler
  */
 class CurlHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class CurlHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\ConnectException
+     * @expectedException \Hough\Guzzle\Exception\ConnectException
      * @expectedExceptionMessage cURL
      */
     public function testCreatesCurlErrors()

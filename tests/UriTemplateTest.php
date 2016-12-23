@@ -1,10 +1,10 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\UriTemplate;
+use Hough\Guzzle\UriTemplate;
 
 /**
- * @covers \Hough\Guzzle6\UriTemplate
+ * @covers \Hough\Guzzle\UriTemplate
  */
 class UriTemplateTest extends \PHPUnit_Framework_TestCase
 {

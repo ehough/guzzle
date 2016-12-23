@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
 use Hough\Promise\PromisorInterface;
 use Hough\Promise\EachPromise;
@@ -10,6 +10,7 @@ use Hough\Promise\EachPromise;
  * The pool will read from an iterator until it is cancelled or until the
  * iterator is consumed. When a request is yielded, the request is sent after
  * applying the "request_options" request options (if provided in the ctor).
+ *a
  *
  * When a function is yielded by the iterator, the function is provided the
  * "request_options" array that should be merged on top of any existing
@@ -71,7 +72,7 @@ class Pool implements PromisorInterface
      * @param ClientInterface $client   Client used to send the requests
      * @param array|\Iterator $requests Requests to send concurrently.
      * @param array           $options  Passes through the options available in
-     *                                  {@see Hough\Guzzle6\Pool::__construct}
+     *                                  {@see Hough\Guzzle\Pool::__construct}
      *
      * @return array Returns an array containing the response or an exception
      *               in the same order that the requests were sent.

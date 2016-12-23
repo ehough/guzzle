@@ -1,10 +1,10 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
-use Hough\Guzzle6\Handler\CurlHandler;
-use Hough\Guzzle6\Handler\CurlMultiHandler;
-use Hough\Guzzle6\Handler\Proxy;
-use Hough\Guzzle6\Handler\StreamHandler;
+use Hough\Guzzle\Handler\CurlHandler;
+use Hough\Guzzle\Handler\CurlMultiHandler;
+use Hough\Guzzle\Handler\Proxy;
+use Hough\Guzzle\Handler\StreamHandler;
 
 //http://php.net/manual/en/function.json-last-error-msg.php#117393
 if (!function_exists('json_last_error_msg')) {
@@ -140,7 +140,7 @@ function choose_handler()
             ? Proxy::wrapStreaming($handler, new StreamHandler())
             : new StreamHandler();
     } elseif (!$handler) {
-        throw new \RuntimeException('ehough/guzzle6 requires cURL, the '
+        throw new \RuntimeException('ehough/guzzle requires cURL, the '
             . 'allow_url_fopen ini setting, or a custom HTTP handler.');
     }
 
@@ -157,7 +157,7 @@ function default_user_agent()
     static $defaultAgent = '';
 
     if (!$defaultAgent) {
-        $defaultAgent = 'ehough/guzzle6/' . Client::VERSION;
+        $defaultAgent = 'ehough/guzzle/' . Client::VERSION;
         $curlVersion  = \curl_version();
         if (extension_loaded('curl') && function_exists('curl_version')) {
             $defaultAgent .= ' curl/' . $curlVersion['version'];

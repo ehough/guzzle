@@ -1,8 +1,8 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
-use Hough\Guzzle6\Exception\BadResponseException;
-use Hough\Guzzle6\Exception\TooManyRedirectsException;
+use Hough\Guzzle\Exception\BadResponseException;
+use Hough\Guzzle\Exception\TooManyRedirectsException;
 use Hough\Promise\PromiseInterface;
 use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;
@@ -13,7 +13,7 @@ use Psr\Http\Message\UriInterface;
  * Request redirect middleware.
  *
  * Apply this middleware like other middleware using
- * {@see Hough\Guzzle6\Middleware::redirect()}.
+ * {@see Hough\Guzzle\Middleware::redirect()}.
  */
 class RedirectMiddleware
 {

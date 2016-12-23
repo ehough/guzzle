@@ -1,5 +1,5 @@
 {
-    "name": "ehough/guzzle6",
+    "name": "ehough/guzzle",
     "type": "library",
     "description": "PHP 5.3-compatible fork of Guzzle 6",
     "keywords": ["framework", "http", "rest", "web service", "curl", "client", "HTTP client"],
@@ -20,6 +20,7 @@
     "require": {
         "php": ">=5.3.29",
         "ehough/psr7": "^1.3.1",
+        "ehough/generators": "^1.0",
         "ehough/promises": "^1.0"
     },
     "require-dev": {
@@ -30,12 +31,12 @@
     "autoload": {
         "files": ["src/functions_include.php"],
         "psr-4": {
-            "Hough\\Guzzle6\\": "src/"
+            "Hough\\Guzzle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Hough\\Tests\\Guzzle6\\": "tests/"
+            "Hough\\Guzzle\\Test\\": "tests/"
         }
     }
 }

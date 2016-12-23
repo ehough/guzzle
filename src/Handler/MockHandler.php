@@ -1,11 +1,11 @@
 <?php
-namespace Hough\Guzzle6\Handler;
+namespace Hough\Guzzle\Handler;
 
-use Hough\Guzzle6\Exception\RequestException;
-use Hough\Guzzle6\HandlerStack;
+use Hough\Guzzle\Exception\RequestException;
+use Hough\Guzzle\HandlerStack;
 use Hough\Promise\PromiseInterface;
 use Hough\Promise\RejectedPromise;
-use Hough\Guzzle6\TransferStats;
+use Hough\Guzzle\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -160,7 +160,7 @@ class MockHandler implements \Countable
                 $this->queue[] = $value;
             } else {
                 throw new \InvalidArgumentException('Expected a response or '
-                    . 'exception. Found ' . \Hough\Guzzle6\describe_type($value));
+                    . 'exception. Found ' . \Hough\Guzzle\describe_type($value));
             }
         }
     }

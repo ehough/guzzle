@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6\Exception;
+namespace Hough\Guzzle\Exception;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -81,10 +81,10 @@ class RequestException extends TransferException
         $level = (int) floor($response->getStatusCode() / 100);
         if ($level === 4) {
             $label = 'Client error';
-            $className = '\Hough\Guzzle6\Exception\ClientException';
+            $className = '\Hough\Guzzle\Exception\ClientException';
         } elseif ($level === 5) {
             $label = 'Server error';
-            $className = '\Hough\Guzzle6\Exception\ServerException';
+            $className = '\Hough\Guzzle\Exception\ServerException';
         } else {
             $label = 'Unsuccessful request';
             $className = __CLASS__;

@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6\Handler;
+namespace Hough\Guzzle\Handler;
 
 use Hough\Psr7;
 use Psr\Http\Message\RequestInterface;

@@ -1,11 +1,11 @@
 <?php
 namespace Hough\Tests\Event;
 
-use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Guzzle\Exception\ConnectException;
 use Hough\Psr7\Request;
 
 /**
- * @covers \Hough\Guzzle6\Exception\ConnectException
+ * @covers \Hough\Guzzle\Exception\ConnectException
  */
 class ConnectExceptionTest extends \PHPUnit_Framework_TestCase
 {

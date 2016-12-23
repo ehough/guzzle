@@ -1,16 +1,16 @@
 <?php
-namespace Hough\Test\Guzzle6\Handler;
+namespace Hough\Test\Guzzle\Handler;
 
-use Hough\Guzzle6\Handler\CurlFactory;
-use Hough\Guzzle6\Handler\EasyHandle;
-use Hough\Tests\Guzzle6\Server;
-use Hough\Guzzle6\Handler;
+use Hough\Guzzle\Handler\CurlFactory;
+use Hough\Guzzle\Handler\EasyHandle;
+use Hough\Guzzle\Test\Server;
+use Hough\Guzzle\Handler;
 use Hough\Psr7;
-use Hough\Guzzle6\TransferStats;
+use Hough\Guzzle\TransferStats;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @covers \Hough\Guzzle6\Handler\CurlFactory
+ * @covers \Hough\Guzzle\Handler\CurlFactory
  */
 class CurlFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,7 +42,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
         ), 'testing');
         $f = new Handler\CurlFactory(3);
         $result = $f->create($request, array('sink' => $stream));
-        $this->assertInstanceOf('\Hough\Guzzle6\Handler\EasyHandle', $result);
+        $this->assertInstanceOf('\Hough\Guzzle\Handler\EasyHandle', $result);
         $this->assertInternalType('resource', $result->handle);
         $this->assertInternalType('array', $result->headers);
         $this->assertSame($stream, $result->sink);
@@ -433,7 +433,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\RequestException
+     * @expectedException \Hough\Guzzle\Exception\RequestException
      * @expectedExceptionMessage but attempting to rewind the request body failed
      */
     public function testFailsWhenCannotRewindRetryAfterNoResponse()
@@ -475,7 +475,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\RequestException
+     * @expectedException \Hough\Guzzle\Exception\RequestException
      * @expectedExceptionMessage The cURL request was retried 3 times
      */
     public function testFailsWhenRetryMoreThanThreeTimes()
@@ -513,11 +513,11 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\ConnectException
+     * @expectedException \Hough\Guzzle\Exception\ConnectException
      */
     public function testCreatesConnectException()
     {
-        $m = new \ReflectionMethod('\Hough\Guzzle6\Handler\CurlFactory', 'finishError');
+        $m = new \ReflectionMethod('\Hough\Guzzle\Handler\CurlFactory', 'finishError');
         $m->setAccessible(true);
         $factory = new Handler\CurlFactory(1);
         $easy = $factory->create(new Psr7\Request('GET', Server::$url), array());
@@ -604,7 +604,7 @@ class CurlFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\RequestException
+     * @expectedException \Hough\Guzzle\Exception\RequestException
      * @expectedExceptionMessage An error was encountered during the on_headers event
      * @expectedExceptionMessage test
      */

@@ -1,7 +1,7 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Client;
+use Hough\Guzzle\Client;
 use Hough\Psr7;
 use Psr\Http\Message\ResponseInterface;
 

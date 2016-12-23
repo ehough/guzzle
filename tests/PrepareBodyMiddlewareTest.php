@@ -1,9 +1,9 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Handler\MockHandler;
-use Hough\Guzzle6\HandlerStack;
-use Hough\Guzzle6\Middleware;
+use Hough\Guzzle\Handler\MockHandler;
+use Hough\Guzzle\HandlerStack;
+use Hough\Guzzle\Middleware;
 use Hough\Promise\PromiseInterface;
 use Hough\Psr7;
 use Hough\Psr7\FnStream;
