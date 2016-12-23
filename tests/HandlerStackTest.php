@@ -169,21 +169,21 @@ class HandlerStackTest extends \PHPUnit_Framework_TestCase
     {
         $calls = array();
 
-        $a = function (callable $next) use (&$calls) {
+        $a = function ($next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
                 $calls[] = array('a', $v);
                 return call_user_func($next, $v . '1');
             };
         };
 
-        $b = function (callable $next) use (&$calls) {
+        $b = function ($next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
                 $calls[] = array('b', $v);
                 return call_user_func($next, $v . '2');
             };
         };
 
-        $c = function (callable $next) use (&$calls) {
+        $c = function ($next) use (&$calls) {
             return function ($v) use ($next, &$calls) {
                 $calls[] = array('c', $v);
                 return call_user_func($next, $v . '3');
