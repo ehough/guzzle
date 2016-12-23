@@ -1,8 +1,8 @@
 # ehough/guzzle
 
-[![Build Status](https://travis-ci.org/ehough/guzzle6.svg?branch=develop)](https://travis-ci.org/ehough/guzzle6)
-[![Latest Stable Version](https://poser.pugx.org/ehough/guzzle6/v/stable)](https://packagist.org/packages/ehough/guzzle6)
-[![License](https://poser.pugx.org/ehough/guzzle6/license)](https://packagist.org/packages/ehough/guzzle6)
+[![Build Status](https://travis-ci.org/ehough/guzzle.svg?branch=develop)](https://travis-ci.org/ehough/guzzle)
+[![Latest Stable Version](https://poser.pugx.org/ehough/guzzle/v/stable)](https://packagist.org/packages/ehough/guzzle)
+[![License](https://poser.pugx.org/ehough/guzzle/license)](https://packagist.org/packages/ehough/guzzle)
 
 
 A PHP 5.3-compatible fork of [Guzzle 6](https://github.com/guzzle/guzzle).

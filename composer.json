@@ -1,5 +1,5 @@
 {
-    "name": "ehough/guzzle6",
+    "name": "ehough/guzzle",
     "type": "library",
     "description": "PHP 5.3-compatible fork of Guzzle 6",
     "keywords": ["framework", "http", "rest", "web service", "curl", "client", "HTTP client"],
