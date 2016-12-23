@@ -94,7 +94,7 @@ class MockHandler implements \Countable
             ? new RejectedPromise($response)
             : \Hough\Promise\promise_for($response);
 
-        $invokeStats = array($this, 'invokeStats');
+        $invokeStats = array($this, '__invokeStats');
         $checkFulfilled = array($this, '__runFulfilled');
         $checkRejected = array($this, '__runRejected');
 
@@ -195,7 +195,10 @@ class MockHandler implements \Countable
         return count($this->queue);
     }
 
-    private function invokeStats(
+    /**
+     * @internal
+     */
+    public function __invokeStats(
         RequestInterface $request,
         array $options,
         ResponseInterface $response = null,

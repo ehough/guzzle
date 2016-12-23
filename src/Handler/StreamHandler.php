@@ -285,7 +285,7 @@ class StreamHandler
 
         if (!empty($options)) {
             foreach ($options as $key => $value) {
-                $method = "add_{$key}";
+                $method = "__add_{$key}";
                 if (isset($methods[$method])) {
                     $this->{$method}($request, $context, $value, $params);
                 }
@@ -351,7 +351,10 @@ class StreamHandler
         return $context;
     }
 
-    private function add_proxy(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_proxy(RequestInterface $request, &$options, $value, &$params)
     {
         if (!is_array($value)) {
             $options['http']['proxy'] = $value;
@@ -370,14 +373,20 @@ class StreamHandler
         }
     }
 
-    private function add_timeout(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_timeout(RequestInterface $request, &$options, $value, &$params)
     {
         if ($value > 0) {
             $options['http']['timeout'] = $value;
         }
     }
 
-    private function add_verify(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_verify(RequestInterface $request, &$options, $value, &$params)
     {
         if ($value === true) {
             // PHP 5.6 or greater will find the system cert by default. When
@@ -403,7 +412,10 @@ class StreamHandler
         $options['ssl']['allow_self_signed'] = false;
     }
 
-    private function add_cert(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_cert(RequestInterface $request, &$options, $value, &$params)
     {
         if (is_array($value)) {
             $options['ssl']['passphrase'] = $value[1];
@@ -417,7 +429,10 @@ class StreamHandler
         $options['ssl']['local_cert'] = $value;
     }
 
-    private function add_progress(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_progress(RequestInterface $request, &$options, $value, &$params)
     {
         $this->addNotification(
             $params,
@@ -429,7 +444,10 @@ class StreamHandler
         );
     }
 
-    private function add_debug(RequestInterface $request, &$options, $value, &$params)
+    /**
+     * @internal
+     */
+    public function __add_debug(RequestInterface $request, &$options, $value, &$params)
     {
         if ($value === false) {
             return;

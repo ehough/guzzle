@@ -71,7 +71,7 @@ class MessageFormatter
     ) {
         $cache = array();
 
-        $headersFuncton = array($this, 'headers');
+        $headersFuncton = array($this, '__headers');
         return preg_replace_callback(
             '/{\s*([A-Za-z_\-\.0-9]+)\s*}/',
             function (array $matches) use ($request, $response, $error, &$cache, $headersFuncton) {
@@ -171,7 +171,10 @@ class MessageFormatter
         );
     }
 
-    private function headers(MessageInterface $message)
+    /**
+     * @internal
+     */
+    public function __headers(MessageInterface $message)
     {
         $result = '';
         foreach ($message->getHeaders() as $name => $values) {
