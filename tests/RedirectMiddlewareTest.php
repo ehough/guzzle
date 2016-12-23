@@ -1,17 +1,17 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Client;
-use Hough\Guzzle6\Handler\MockHandler;
-use Hough\Guzzle6\HandlerStack;
-use Hough\Guzzle6\Middleware;
+use Hough\Guzzle\Client;
+use Hough\Guzzle\Handler\MockHandler;
+use Hough\Guzzle\HandlerStack;
+use Hough\Guzzle\Middleware;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
-use Hough\Guzzle6\RedirectMiddleware;
+use Hough\Guzzle\RedirectMiddleware;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * @covers \Hough\Guzzle6\RedirectMiddleware
+ * @covers \Hough\Guzzle\RedirectMiddleware
  */
 class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
 {
@@ -76,7 +76,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\TooManyRedirectsException
+     * @expectedException \Hough\Guzzle\Exception\TooManyRedirectsException
      * @expectedExceptionMessage Will not follow more than 3 redirects
      */
     public function testLimitsToMaxRedirects()
@@ -96,7 +96,7 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\BadResponseException
+     * @expectedException \Hough\Guzzle\Exception\BadResponseException
      * @expectedExceptionMessage Redirect URI,
      */
     public function testEnsuresProtocolIsValid()

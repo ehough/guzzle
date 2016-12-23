@@ -1,4 +1,4 @@
 <?php
-namespace Hough\Guzzle6\Exception;
+namespace Hough\Guzzle\Exception;
 
 class TransferException extends \RuntimeException implements GuzzleException {}

@@ -1,13 +1,13 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle\Exception\RequestException;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
-use Hough\Guzzle6\MessageFormatter;
+use Hough\Guzzle\MessageFormatter;
 
 /**
- * @covers \Hough\Guzzle6\MessageFormatter
+ * @covers \Hough\Guzzle\MessageFormatter
  */
 class MessageFormatterTest extends \PHPUnit_Framework_TestCase
 {

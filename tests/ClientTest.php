@@ -1,10 +1,10 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6\Client;
-use Hough\Guzzle6\Cookie\CookieJar;
-use Hough\Guzzle6\Handler\MockHandler;
-use Hough\Guzzle6\HandlerStack;
+use Hough\Guzzle\Client;
+use Hough\Guzzle\Cookie\CookieJar;
+use Hough\Guzzle\Handler\MockHandler;
+use Hough\Guzzle\HandlerStack;
 use Hough\Promise\PromiseInterface;
 use Hough\Psr7;
 use Hough\Psr7\Request;
@@ -218,7 +218,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Hough\Guzzle6\Exception\ClientException
+     * @expectedException \Hough\Guzzle\Exception\ClientException
      */
     public function testThrowsHttpErrorsByDefault()
     {
@@ -230,7 +230,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage cookies must be an instance of Hough\Guzzle6\Cookie\CookieJarInterface
+     * @expectedExceptionMessage cookies must be an instance of Hough\Guzzle\Cookie\CookieJarInterface
      */
     public function testValidatesCookies()
     {

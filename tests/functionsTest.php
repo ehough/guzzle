@@ -1,7 +1,7 @@
 <?php
-namespace Hough\Tests\Guzzle6;
+namespace Hough\Guzzle\Test;
 
-use Hough\Guzzle6;
+use Hough\Guzzle;
 
 class FunctionsTest extends \PHPUnit_Framework_TestCase
 {
@@ -9,7 +9,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             'foo/123',
-            \Hough\Guzzle6\uri_template('foo/{bar}', array('bar' => '123'))
+            \Hough\Guzzle\uri_template('foo/{bar}', array('bar' => '123'))
         );
     }
     public function noBodyProvider()
@@ -19,7 +19,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
 
     public function testProvidesDefaultUserAgent()
     {
-        $ua = \Hough\Guzzle6\default_user_agent();
+        $ua = \Hough\Guzzle\default_user_agent();
         $this->assertEquals(1, preg_match('#^ehough/guzzle6/[1-9]+\.[0-9]+\.[0-9]+ curl/.+ PHP/.+$#', $ua));
     }
 
@@ -31,7 +31,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
             array(false, 'bool(false)'),
             array(10, 'int(10)'),
             array(1.0, 'float(1)'),
-            array(new StrClass(), 'object(Hough\Tests\Guzzle6\StrClass)'),
+            array(new StrClass(), 'object(Hough\Guzzle\Test\StrClass)'),
             array(array('foo'), 'array(1)')
         );
     }
@@ -40,7 +40,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testDescribesType($input, $output)
     {
-        $this->assertEquals($output, \Hough\Guzzle6\describe_type($input));
+        $this->assertEquals($output, \Hough\Guzzle\describe_type($input));
     }
 
     public function testParsesHeadersFromLines()
@@ -50,7 +50,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
             'Foo' => array('bar', 'baz'),
             'Abc' => array('123'),
             'Def' => array('a, b'),
-        ), \Hough\Guzzle6\headers_from_lines($lines));
+        ), \Hough\Guzzle\headers_from_lines($lines));
     }
 
     public function testParsesHeadersFromLinesWithMultipleLines()
@@ -58,17 +58,17 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
         $lines = array('Foo: bar', 'Foo: baz', 'Foo: 123');
         $this->assertEquals(array(
             'Foo' => array('bar', 'baz', '123'),
-        ), \Hough\Guzzle6\headers_from_lines($lines));
+        ), \Hough\Guzzle\headers_from_lines($lines));
     }
 
     public function testReturnsDebugResource()
     {
-        $this->assertTrue(is_resource(\Hough\Guzzle6\debug_resource()));
+        $this->assertTrue(is_resource(\Hough\Guzzle\debug_resource()));
     }
 
     public function testProvidesDefaultCaBundler()
     {
-        $this->assertFileExists(\Hough\Guzzle6\default_ca_bundle());
+        $this->assertFileExists(\Hough\Guzzle\default_ca_bundle());
     }
 
     public function noProxyProvider()
@@ -90,7 +90,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             $result,
-            \Hough\Guzzle6\is_host_in_noproxy($host, $list)
+            \Hough\Guzzle\is_host_in_noproxy($host, $list)
         );
     }
 
@@ -99,12 +99,12 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsuresNoProxyCheckHostIsSet()
     {
-        \Hough\Guzzle6\is_host_in_noproxy('', array());
+        \Hough\Guzzle\is_host_in_noproxy('', array());
     }
 
     public function testEncodesJson()
     {
-        $this->assertEquals('true', \Hough\Guzzle6\json_encode(true));
+        $this->assertEquals('true', \Hough\Guzzle\json_encode(true));
     }
 
     /**
@@ -112,12 +112,12 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testEncodesJsonAndThrowsOnError()
     {
-        \Hough\Guzzle6\json_encode("\x99");
+        \Hough\Guzzle\json_encode("\x99");
     }
 
     public function testDecodesJson()
     {
-        $this->assertSame(true, \Hough\Guzzle6\json_decode('true'));
+        $this->assertSame(true, \Hough\Guzzle\json_decode('true'));
     }
 
     /**
@@ -125,7 +125,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testDecodesJsonAndThrowsOnError()
     {
-        \Hough\Guzzle6\json_decode('{{]]');
+        \Hough\Guzzle\json_decode('{{]]');
     }
 }
 

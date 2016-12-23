@@ -1,12 +1,12 @@
 <?php
 namespace Hough\Tests\Event;
 
-use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle\Exception\RequestException;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
 
 /**
- * @covers \Hough\Guzzle6\Exception\RequestException
+ * @covers \Hough\Guzzle\Exception\RequestException
  */
 class RequestExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +25,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
     {
         $e = RequestException::create(new Request('GET', '/'));
         $this->assertEquals('Error completing request', $e->getMessage());
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\RequestException', $e);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\RequestException', $e);
     }
 
     public function testCreatesClientErrorResponseException()
@@ -39,7 +39,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
             '400 Bad Request',
             $e->getMessage()
         );
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\ClientException', $e);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\ClientException', $e);
     }
 
     public function testCreatesServerErrorResponseException()
@@ -53,7 +53,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
             '500 Internal Server Error',
             $e->getMessage()
         );
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\ServerException', $e);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\ServerException', $e);
     }
 
     public function testCreatesGenericErrorResponseException()
@@ -67,7 +67,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
             '600 ',
             $e->getMessage()
         );
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\RequestException', $e);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\RequestException', $e);
     }
 
     public function dataPrintableResponses()
@@ -97,7 +97,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
             $content,
             $e->getMessage()
         );
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\RequestException', $e);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\RequestException', $e);
     }
 
     public function testCreatesExceptionWithTruncatedSummary()
@@ -127,7 +127,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
             $content,
             $e->getMessage()
         );
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\RequestException', $e);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\RequestException', $e);
     }
 
     public function testHasStatusCodeAsExceptionCode()
@@ -141,7 +141,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
         $e = new \Exception('foo');
         $r = new Request('GET', 'http://www.oo.com');
         $ex = RequestException::wrapException($r, $e);
-        $this->assertInstanceOf('Hough\Guzzle6\Exception\RequestException', $ex);
+        $this->assertInstanceOf('Hough\Guzzle\Exception\RequestException', $ex);
         $this->assertSame($e, $ex->getPrevious());
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6\Cookie;
+namespace Hough\Guzzle\Cookie;
 
 /**
  * Persists cookies in the client session

@@ -1,5 +1,5 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
 /**
  * Expands URI templates. Userland implementation of PECL uri_template.

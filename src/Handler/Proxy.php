@@ -1,7 +1,7 @@
 <?php
-namespace Hough\Guzzle6\Handler;
+namespace Hough\Guzzle\Handler;
 
-use Hough\Guzzle6\RequestOptions;
+use Hough\Guzzle\RequestOptions;
 use Psr\Http\Message\RequestInterface;
 
 /**

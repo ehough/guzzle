@@ -1,8 +1,8 @@
 <?php
-namespace Hough\Guzzle6;
+namespace Hough\Guzzle;
 
-use Hough\Guzzle6\Cookie\CookieJarInterface;
-use Hough\Guzzle6\Exception\RequestException;
+use Hough\Guzzle\Cookie\CookieJarInterface;
+use Hough\Guzzle\Exception\RequestException;
 use Hough\Promise\RejectedPromise;
 use Hough\Psr7;
 use Psr\Http\Message\ResponseInterface;
@@ -29,7 +29,7 @@ final class Middleware
                 if (empty($options['cookies'])) {
                     return call_user_func($handler, $request, $options);
                 } elseif (!($options['cookies'] instanceof CookieJarInterface)) {
-                    throw new \InvalidArgumentException('cookies must be an instance of Hough\Guzzle6\Cookie\CookieJarInterface');
+                    throw new \InvalidArgumentException('cookies must be an instance of Hough\Guzzle\Cookie\CookieJarInterface');
                 }
                 $cookieJar = $options['cookies'];
                 $request = $cookieJar->withCookieHeader($request);

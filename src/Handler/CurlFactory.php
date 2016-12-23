@@ -1,13 +1,13 @@
 <?php
-namespace Hough\Guzzle6\Handler;
+namespace Hough\Guzzle\Handler;
 
-use Hough\Guzzle6\Exception\RequestException;
-use Hough\Guzzle6\Exception\ConnectException;
+use Hough\Guzzle\Exception\RequestException;
+use Hough\Guzzle\Exception\ConnectException;
 use Hough\Promise\FulfilledPromise;
 use Hough\Promise\RejectedPromise;
 use Hough\Psr7;
 use Hough\Psr7\LazyOpenStream;
-use Hough\Guzzle6\TransferStats;
+use Hough\Guzzle\TransferStats;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -409,7 +409,7 @@ class CurlFactory implements CurlFactoryInterface
                 if (isset($options['proxy'][$scheme])) {
                     $host = $easy->request->getUri()->getHost();
                     if (!isset($options['proxy']['no']) ||
-                        !\Hough\Guzzle6\is_host_in_noproxy($host, $options['proxy']['no'])
+                        !\Hough\Guzzle\is_host_in_noproxy($host, $options['proxy']['no'])
                     ) {
                         $conf[CURLOPT_PROXY] = $options['proxy'][$scheme];
                     }
@@ -464,7 +464,7 @@ class CurlFactory implements CurlFactoryInterface
         }
 
         if (!empty($options['debug'])) {
-            $conf[CURLOPT_STDERR] = \Hough\Guzzle6\debug_resource($options['debug']);
+            $conf[CURLOPT_STDERR] = \Hough\Guzzle\debug_resource($options['debug']);
             $conf[CURLOPT_VERBOSE] = true;
         }
     }
