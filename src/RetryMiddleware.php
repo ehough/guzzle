@@ -30,9 +30,9 @@ class RetryMiddleware
      *                              milliseconds to delay.
      */
     public function __construct(
-        callable $decider,
-        callable $nextHandler,
-        callable $delay = null
+        $decider,
+        $nextHandler,
+        $delay = null
     ) {
         $this->decider = $decider;
         $this->nextHandler = $nextHandler;
@@ -64,7 +64,7 @@ class RetryMiddleware
         }
 
         $fn = $this->nextHandler;
-        return $fn($request, $options)
+        return call_user_func($fn, $request, $options)
             ->then(
                 $this->onFulfilled($request, $options),
                 $this->onRejected($request, $options)
@@ -107,6 +107,6 @@ class RetryMiddleware
     {
         $options['delay'] = call_user_func($this->delay, ++$options['retries'], $response);
 
-        return $this($request, $options);
+        return call_user_func($this, $request, $options);
     }
 }

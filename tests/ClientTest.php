@@ -191,7 +191,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $mock = new MockHandler(array(new Response(200, array(), 'foo')));
         $client = new Client(array('handler' => $mock));
         $client->get('http://foo.com', array('save_to' => $r));
-        $this->assertSame($r, $mock->getLastOptions()['sink']);
+        $lastOptions = $mock->getLastOptions();
+        $this->assertSame($r, $lastOptions['sink']);
     }
 
     public function testAllowRedirectsCanBeTrue()
@@ -200,7 +201,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(array('handler' => $handler));
         $client->get('http://foo.com', array('allow_redirects' => true));
-        $this->assertInternalType('array',  $mock->getLastOptions()['allow_redirects']);
+        $lastOptions = $mock->getLastOptions();
+        $this->assertInternalType('array',  $lastOptions['allow_redirects']);
     }
 
     /**
@@ -272,7 +274,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->get('http://foo.com', array('decode_content' => false));
         $last = $mock->getLastRequest();
         $this->assertFalse($last->hasHeader('Accept-Encoding'));
-        $this->assertFalse($mock->getLastOptions()['decode_content']);
+        $lastOptions = $mock->getLastOptions();
+        $this->assertFalse($lastOptions['decode_content']);
     }
 
     public function testCanSetContentDecodingToValue()
@@ -282,7 +285,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->get('http://foo.com', array('decode_content' => 'gzip'));
         $last = $mock->getLastRequest();
         $this->assertEquals('gzip', $last->getHeaderLine('Accept-Encoding'));
-        $this->assertEquals('gzip', $mock->getLastOptions()['decode_content']);
+        $lastOptions = $mock->getLastOptions();
+        $this->assertEquals('gzip', $lastOptions['decode_content']);
     }
 
     /**
@@ -567,7 +571,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $mock = new MockHandler(array(new Response()));
         $client = new Client(array('handler' => $mock));
         $client->request('GET', 'http://foo.com');
-        $this->assertTrue($mock->getLastOptions()['synchronous']);
+        $lastOptions = $mock->getLastOptions();
+        $this->assertTrue($lastOptions['synchronous']);
     }
 
     public function testSendSendsWithSync()
@@ -575,7 +580,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $mock = new MockHandler(array(new Response()));
         $client = new Client(array('handler' => $mock));
         $client->send(new Request('GET', 'http://foo.com'));
-        $this->assertTrue($mock->getLastOptions()['synchronous']);
+        $lastOptions = $mock->getLastOptions();
+        $this->assertTrue($lastOptions['synchronous']);
     }
 
     public function testCanSetCustomHandler()
@@ -608,7 +614,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $client->send($request);
 
-        $this->assertEquals('foo.com', $mockHandler->getLastRequest()->getHeader('Host')[0]);
+        $hostHeader = $mockHandler->getLastRequest()->getHeader('Host');
+        $this->assertEquals('foo.com', $hostHeader[0]);
     }
 
     public function testSendSendsWithDomainAndHostHeaderInRequestTheHostShouldBePreserved()
@@ -619,7 +626,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $client->send($request);
 
-        $this->assertEquals('foo.com', $mockHandler->getLastRequest()->getHeader('Host')[0]);
+        $hostHeader = $mockHandler->getLastRequest()->getHeader('Host');
+        $this->assertEquals('foo.com', $hostHeader[0]);
     }
 
     /**

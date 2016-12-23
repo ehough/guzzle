@@ -143,9 +143,10 @@ class MiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testMapsRequest()
     {
+        $assertEquals = array($this, 'assertEquals');
         $h = new MockHandler(array(
-            function (RequestInterface $request, array $options) {
-                $this->assertEquals('foo', $request->getHeaderLine('Bar'));
+            function (RequestInterface $request, array $options) use ($assertEquals) {
+                call_user_func($assertEquals, 'foo', $request->getHeaderLine('Bar'));
                 return new Response(200);
             }
         ));

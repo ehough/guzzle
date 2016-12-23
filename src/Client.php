@@ -272,7 +272,7 @@ class Client implements ClientInterface
         $handler = $options['handler'];
 
         try {
-            return Promise\promise_for($handler($request, $options));
+            return Promise\promise_for(call_user_func($handler, $request, $options));
         } catch (\Exception $e) {
             return Promise\rejection_for($e);
         }

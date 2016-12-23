@@ -32,8 +32,8 @@ class MockHandler implements \Countable
      */
     public static function createWithMiddleware(
         array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
+        $onFulfilled = null,
+        $onRejected = null
     ) {
         return HandlerStack::create(new self($queue, $onFulfilled, $onRejected));
     }
@@ -49,8 +49,8 @@ class MockHandler implements \Countable
      */
     public function __construct(
         array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
+        $onFulfilled = null,
+        $onRejected = null
     ) {
         $this->onFulfilled = $onFulfilled;
         $this->onRejected = $onRejected;
@@ -94,12 +94,14 @@ class MockHandler implements \Countable
             ? new RejectedPromise($response)
             : \Hough\Promise\promise_for($response);
 
+        $invokeStats = array($this, 'invokeStats');
+        $checkFulfilled = array($this, '__runFulfilled');
+        $checkRejected = array($this, '__runRejected');
+
         return $response->then(
-            function ($value) use ($request, $options) {
-                $this->invokeStats($request, $options, $value);
-                if ($this->onFulfilled) {
-                    call_user_func($this->onFulfilled, $value);
-                }
+            function ($value) use ($request, $options, $invokeStats, $checkFulfilled) {
+                call_user_func($invokeStats, $request, $options, $value);
+                call_user_func($checkFulfilled, $value);
                 if (isset($options['sink'])) {
                     $contents = (string) $value->getBody();
                     $sink = $options['sink'];
@@ -115,14 +117,32 @@ class MockHandler implements \Countable
 
                 return $value;
             },
-            function ($reason) use ($request, $options) {
-                $this->invokeStats($request, $options, null, $reason);
-                if ($this->onRejected) {
-                    call_user_func($this->onRejected, $reason);
-                }
+            function ($reason) use ($request, $options, $invokeStats, $checkRejected) {
+                call_user_func($invokeStats, $request, $options, null, $reason);
+                call_user_func($checkRejected, $reason);
                 return new RejectedPromise($reason);
             }
         );
+    }
+
+    /**
+     * @internal
+     */
+    public function __runFulfilled($value)
+    {
+        if ($this->onFulfilled) {
+            call_user_func($this->onFulfilled, $value);
+        }
+    }
+
+    /**
+     * @internal
+     */
+    public function __runRejected($reason)
+    {
+        if ($this->onRejected) {
+            call_user_func($this->onRejected, $reason);
+        }
     }
 
     /**

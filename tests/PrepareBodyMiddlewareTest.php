@@ -15,9 +15,10 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
 {
     public function testAddsContentLengthWhenMissingAndPossible()
     {
+        $assertEquals = array($this, 'assertEquals');
         $h = new MockHandler(array(
-            function (RequestInterface $request) {
-                $this->assertEquals(3, $request->getHeaderLine('Content-Length'));
+            function (RequestInterface $request) use ($assertEquals) {
+                call_user_func($assertEquals, 3, $request->getHeaderLine('Content-Length'));
                 return new Response(200);
             }
         ));
@@ -36,10 +37,12 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
         $body = FnStream::decorate(Psr7\stream_for('foo'), array(
             'getSize' => function () { return null; }
         ));
+        $assertEquals = array($this, 'assertEquals');
+        $assertFalse  = array($this, 'assertFalse');
         $h = new MockHandler(array(
-            function (RequestInterface $request) {
-                $this->assertFalse($request->hasHeader('Content-Length'));
-                $this->assertEquals('chunked', $request->getHeaderLine('Transfer-Encoding'));
+            function (RequestInterface $request) use ($assertEquals, $assertFalse) {
+                call_user_func($assertFalse, $request->hasHeader('Content-Length'));
+                call_user_func($assertEquals, 'chunked', $request->getHeaderLine('Transfer-Encoding'));
                 return new Response(200);
             }
         ));
@@ -56,10 +59,12 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
     public function testAddsContentTypeWhenMissingAndPossible()
     {
         $bd = Psr7\stream_for(fopen(__DIR__ . '/../composer.json', 'r'));
+        $assertEquals = array($this, 'assertEquals');
+        $assertTrue   = array($this, 'assertTrue');
         $h = new MockHandler(array(
-            function (RequestInterface $request) {
-                $this->assertEquals('application/json', $request->getHeaderLine('Content-Type'));
-                $this->assertTrue($request->hasHeader('Content-Length'));
+            function (RequestInterface $request) use ($assertEquals, $assertTrue) {
+                call_user_func($assertEquals, 'application/json', $request->getHeaderLine('Content-Type'));
+                call_user_func($assertTrue, $request->hasHeader('Content-Length'));
                 return new Response(200);
             }
         ));
@@ -90,9 +95,10 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
     {
         $bd = Psr7\stream_for(fopen(__DIR__ . '/../composer.json', 'r'));
 
+        $assertEquals = array($this, 'assertEquals');
         $h = new MockHandler(array(
-            function (RequestInterface $request) use ($result) {
-                $this->assertEquals($result, $request->getHeader('Expect'));
+            function (RequestInterface $request) use ($result, $assertEquals) {
+                call_user_func($assertEquals, $result, $request->getHeader('Expect'));
                 return new Response(200);
             }
         ));
@@ -112,9 +118,10 @@ class PrepareBodyMiddlewareTest extends \PHPUnit_Framework_TestCase
     public function testIgnoresIfExpectIsPresent()
     {
         $bd = Psr7\stream_for(fopen(__DIR__ . '/../composer.json', 'r'));
+        $assertEquals = array($this, 'assertEquals');
         $h = new MockHandler(array(
-            function (RequestInterface $request) {
-                $this->assertEquals(array('Foo'), $request->getHeader('Expect'));
+            function (RequestInterface $request) use ($assertEquals) {
+                call_user_func($assertEquals, array('Foo'), $request->getHeader('Expect'));
                 return new Response(200);
             }
         ));

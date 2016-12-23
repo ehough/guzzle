@@ -13,12 +13,13 @@ class ConnectExceptionTest extends \PHPUnit_Framework_TestCase
     {
         $req = new Request('GET', '/');
         $prev = new \Exception();
-        $e = new ConnectException('foo', $req, $prev, ['foo' => 'bar']);
+        $e = new ConnectException('foo', $req, $prev, array('foo' => 'bar'));
         $this->assertSame($req, $e->getRequest());
         $this->assertNull($e->getResponse());
         $this->assertFalse($e->hasResponse());
         $this->assertEquals('foo', $e->getMessage());
-        $this->assertEquals('bar', $e->getHandlerContext()['foo']);
+        $ctx = $e->getHandlerContext();
+        $this->assertEquals('bar', $ctx['foo']);
         $this->assertSame($prev, $e->getPrevious());
     }
 }

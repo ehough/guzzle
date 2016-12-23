@@ -33,7 +33,7 @@ class RedirectMiddleware
     /**
      * @param callable $nextHandler Next handler to invoke.
      */
-    public function __construct(callable $nextHandler)
+    public function __construct($nextHandler)
     {
         $this->nextHandler = $nextHandler;
     }
@@ -49,7 +49,7 @@ class RedirectMiddleware
         $fn = $this->nextHandler;
 
         if (empty($options['allow_redirects'])) {
-            return $fn($request, $options);
+            return call_user_func($fn, $request, $options);
         }
 
         if ($options['allow_redirects'] === true) {
@@ -62,10 +62,10 @@ class RedirectMiddleware
         }
 
         if (empty($options['allow_redirects']['max'])) {
-            return $fn($request, $options);
+            return call_user_func($fn, $request, $options);
         }
 
-        return $fn($request, $options)
+        return call_user_func($fn, $request, $options)
             ->then(function (ResponseInterface $response) use ($request, $options) {
                 return $this->checkRedirect($request, $options, $response);
             });
@@ -102,7 +102,7 @@ class RedirectMiddleware
         }
 
         /** @var PromiseInterface|ResponseInterface $promise */
-        $promise = $this($nextRequest, $options);
+        $promise = call_user_func($this, $nextRequest, $options);
 
         // Add headers to be able to track history of redirects.
         if (!empty($options['allow_redirects']['track_redirects'])) {

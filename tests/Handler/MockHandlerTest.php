@@ -15,16 +15,16 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testReturnsMockResponse()
     {
         $res = new Response();
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $p = $mock($request, []);
+        $p = $mock($request, array());
         $this->assertSame($res, $p->wait());
     }
 
     public function testIsCountable()
     {
         $res = new Response();
-        $mock = new MockHandler([$res, $res]);
+        $mock = new MockHandler(array($res, $res));
         $this->assertCount(2, $mock);
     }
 
@@ -33,17 +33,17 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsuresEachAppendIsValid()
     {
-        $mock = new MockHandler(['a']);
+        $mock = new MockHandler(array('a'));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, []);
+        $mock($request, array());
     }
 
     public function testCanQueueExceptions()
     {
         $e = new \Exception('a');
-        $mock = new MockHandler([$e]);
+        $mock = new MockHandler(array($e));
         $request = new Request('GET', 'http://example.com');
-        $p = $mock($request, []);
+        $p = $mock($request, array());
         try {
             $p->wait();
             $this->fail();
@@ -55,20 +55,20 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testCanGetLastRequestAndOptions()
     {
         $res = new Response();
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, ['foo' => 'bar']);
+        $mock($request, array('foo' => 'bar'));
         $this->assertSame($request, $mock->getLastRequest());
-        $this->assertEquals(['foo' => 'bar'], $mock->getLastOptions());
+        $this->assertEquals(array('foo' => 'bar'), $mock->getLastOptions());
     }
 
     public function testSinkFilename()
     {
         $filename = sys_get_temp_dir().'/mock_test_'.uniqid();
         $res = new Response(200, array(), 'TEST CONTENT');
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', '/');
-        $p = $mock($request, ['sink' => $filename]);
+        $p = $mock($request, array('sink' => $filename));
         $p->wait();
 
         $this->assertFileExists($filename);
@@ -82,9 +82,9 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
         $file = tmpfile();
         $meta = stream_get_meta_data($file);
         $res = new Response(200, array(), 'TEST CONTENT');
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', '/');
-        $p = $mock($request, ['sink' => $file]);
+        $p = $mock($request, array('sink' => $file));
         $p->wait();
 
         $this->assertFileExists($meta['uri']);
@@ -95,9 +95,9 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new \Hough\Psr7\Stream(tmpfile());
         $res = new Response(200, array(), 'TEST CONTENT');
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', '/');
-        $p = $mock($request, ['sink' => $stream]);
+        $p = $mock($request, array('sink' => $stream));
         $p->wait();
 
         $this->assertFileExists($stream->getMetadata('uri'));
@@ -108,9 +108,9 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $r = new Response();
         $fn = function ($req, $o) use ($r) { return $r; };
-        $mock = new MockHandler([$fn]);
+        $mock = new MockHandler(array($fn));
         $request = new Request('GET', 'http://example.com');
-        $p = $mock($request, ['foo' => 'bar']);
+        $p = $mock($request, array('foo' => 'bar'));
         $this->assertSame($r, $p->wait());
     }
 
@@ -120,9 +120,9 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testEnsuresOnHeadersIsCallable()
     {
         $res = new Response();
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, ['on_headers' => 'error!']);
+        $mock($request, array('on_headers' => 'error!'));
     }
 
     /**
@@ -133,24 +133,24 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testRejectsPromiseWhenOnHeadersFails()
     {
         $res = new Response();
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
-        $promise = $mock($request, [
+        $promise = $mock($request, array(
             'on_headers' => function () {
                 throw new \Exception('test');
             }
-        ]);
+        ));
 
         $promise->wait();
     }
     public function testInvokesOnFulfilled()
     {
         $res = new Response();
-        $mock = new MockHandler([$res], function ($v) use (&$c) {
+        $mock = new MockHandler(array($res), function ($v) use (&$c) {
             $c = $v;
         });
         $request = new Request('GET', 'http://example.com');
-        $mock($request, [])->wait();
+        $mock($request, array())->wait();
         $this->assertSame($res, $c);
     }
 
@@ -158,9 +158,9 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $e = new \Exception('a');
         $c = null;
-        $mock = new MockHandler([$e], null, function ($v) use (&$c) { $c = $v; });
+        $mock = new MockHandler(array($e), null, function ($v) use (&$c) { $c = $v; });
         $request = new Request('GET', 'http://example.com');
-        $mock($request, [])->wait(false);
+        $mock($request, array())->wait(false);
         $this->assertSame($e, $c);
     }
 
@@ -171,7 +171,7 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $mock = new MockHandler();
         $request = new Request('GET', 'http://example.com');
-        $mock($request, []);
+        $mock($request, array());
     }
 
     /**
@@ -180,21 +180,21 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     public function testCanCreateWithDefaultMiddleware()
     {
         $r = new Response(500);
-        $mock = MockHandler::createWithMiddleware([$r]);
+        $mock = MockHandler::createWithMiddleware(array($r));
         $request = new Request('GET', 'http://example.com');
-        $mock($request, ['http_errors' => true])->wait();
+        $mock($request, array('http_errors' => true))->wait();
     }
 
     public function testInvokesOnStatsFunctionForResponse()
     {
         $res = new Response();
-        $mock = new MockHandler([$res]);
+        $mock = new MockHandler(array($res));
         $request = new Request('GET', 'http://example.com');
         $stats = null;
         $onStats = function (TransferStats $s) use (&$stats) {
             $stats = $s;
         };
-        $p = $mock($request, ['on_stats' => $onStats]);
+        $p = $mock($request, array('on_stats' => $onStats));
         $p->wait();
         $this->assertSame($res, $stats->getResponse());
         $this->assertSame($request, $stats->getRequest());
@@ -204,13 +204,13 @@ class MockHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $e = new \Exception('a');
         $c = null;
-        $mock = new MockHandler([$e], null, function ($v) use (&$c) { $c = $v; });
+        $mock = new MockHandler(array($e), null, function ($v) use (&$c) { $c = $v; });
         $request = new Request('GET', 'http://example.com');
         $stats = null;
         $onStats = function (TransferStats $s) use (&$stats) {
             $stats = $s;
         };
-        $mock($request, ['on_stats' => $onStats])->wait(false);
+        $mock($request, array('on_stats' => $onStats))->wait(false);
         $this->assertSame($e, $stats->getHandlerErrorData());
         $this->assertSame(null, $stats->getResponse());
         $this->assertSame($request, $stats->getRequest());

@@ -72,14 +72,14 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function dataPrintableResponses()
     {
-        return [
-            ['You broke the test!'],
-            ['<h1>zlomený zkouška</h1>'],
-            ['{"tester": "Philépe Gonzalez"}'],
-            ["<xml>\n\t<text>Your friendly test</text>\n</xml>"],
-            ['document.body.write("here comes a test");'],
-            ["body:before {\n\tcontent: 'test style';\n}"],
-        ];
+        return array(
+            array('You broke the test!'),
+            array('<h1>zlomený zkouška</h1>'),
+            array('{"tester": "Philépe Gonzalez"}'),
+            array("<xml>\n\t<text>Your friendly test</text>\n</xml>"),
+            array('document.body.write("here comes a test");'),
+            array("body:before {\n\tcontent: 'test style';\n}"),
+        );
     }
 
     /**
@@ -119,7 +119,7 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
     {
         $response = new Response(
             500,
-            ['Content-Type' => 'image/gif'],
+            array('Content-Type' => 'image/gif'),
             $content = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') // 1x1 gif
         );
         $e = RequestException::create(new Request('GET', '/'), $response);
@@ -156,8 +156,8 @@ class RequestExceptionTest extends \PHPUnit_Framework_TestCase
     public function testCanProvideHandlerContext()
     {
         $r = new Request('GET', 'http://www.oo.com');
-        $e = new RequestException('foo', $r, null, null, ['bar' => 'baz']);
-        $this->assertEquals(['bar' => 'baz'], $e->getHandlerContext());
+        $e = new RequestException('foo', $r, null, null, array('bar' => 'baz'));
+        $this->assertEquals(array('bar' => 'baz'), $e->getHandlerContext());
     }
 
     public function testObfuscateUrlWithUsername()

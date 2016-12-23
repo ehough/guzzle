@@ -63,14 +63,20 @@ class CurlMultiHandler
         $easy = $this->factory->create($request, $options);
         $id = (int) $easy->handle;
 
+        $cancelCallback = array($this, '__cancelHandle');
         $promise = new Promise(
             array($this, 'execute'),
-            function () use ($id) { return $this->cancel($id); }
+            function () use ($id, $cancelCallback) { call_user_func($cancelCallback, $id); }
         );
 
         $this->addRequest(array('easy' => $easy, 'deferred' => $promise));
 
         return $promise;
+    }
+
+    public function __cancelHandle($id)
+    {
+        $this->cancel($id);
     }
 
     /**

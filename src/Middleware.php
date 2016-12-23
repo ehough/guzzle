@@ -24,16 +24,16 @@ final class Middleware
      */
     public static function cookies()
     {
-        return function (callable $handler) {
+        return function ($handler) {
             return function ($request, array $options) use ($handler) {
                 if (empty($options['cookies'])) {
-                    return $handler($request, $options);
+                    return call_user_func($handler, $request, $options);
                 } elseif (!($options['cookies'] instanceof CookieJarInterface)) {
                     throw new \InvalidArgumentException('cookies must be an instance of Hough\Guzzle6\Cookie\CookieJarInterface');
                 }
                 $cookieJar = $options['cookies'];
                 $request = $cookieJar->withCookieHeader($request);
-                return $handler($request, $options)
+                return call_user_func($handler, $request, $options)
                     ->then(function ($response) use ($cookieJar, $request) {
                         $cookieJar->extractCookies($request, $response);
                         return $response;
@@ -51,12 +51,12 @@ final class Middleware
      */
     public static function httpErrors()
     {
-        return function (callable $handler) {
+        return function ($handler) {
             return function ($request, array $options) use ($handler) {
                 if (empty($options['http_errors'])) {
-                    return $handler($request, $options);
+                    return call_user_func($handler, $request, $options);
                 }
-                return $handler($request, $options)->then(
+                return call_user_func($handler, $request, $options)->then(
                     function (ResponseInterface $response) use ($request, $handler) {
                         $code = $response->getStatusCode();
                         if ($code < 400) {
@@ -83,9 +83,9 @@ final class Middleware
             throw new \InvalidArgumentException('history container must be an array or object implementing ArrayAccess');
         }
 
-        return function (callable $handler) use (&$container) {
+        return function ($handler) use (&$container) {
             return function ($request, array $options) use ($handler, &$container) {
-                return $handler($request, $options)->then(
+                return call_user_func($handler, $request, $options)->then(
                     function ($value) use ($request, &$container, $options) {
                         $container[] = array(
                             'request'  => $request,
@@ -122,16 +122,16 @@ final class Middleware
      *
      * @return callable Returns a function that accepts the next handler.
      */
-    public static function tap(callable $before = null, callable $after = null)
+    public static function tap($before = null, $after = null)
     {
-        return function (callable $handler) use ($before, $after) {
+        return function ($handler) use ($before, $after) {
             return function ($request, array $options) use ($handler, $before, $after) {
                 if ($before) {
-                    $before($request, $options);
+                    call_user_func($before, $request, $options);
                 }
-                $response = $handler($request, $options);
+                $response = call_user_func($handler, $request, $options);
                 if ($after) {
-                    $after($request, $options, $response);
+                    call_user_func($after, $request, $options, $response);
                 }
                 return $response;
             };
@@ -145,7 +145,7 @@ final class Middleware
      */
     public static function redirect()
     {
-        return function (callable $handler) {
+        return function ($handler) {
             return new RedirectMiddleware($handler);
         };
     }
@@ -165,9 +165,9 @@ final class Middleware
      *
      * @return callable Returns a function that accepts the next handler.
      */
-    public static function retry(callable $decider, callable $delay = null)
+    public static function retry($decider, $delay = null)
     {
-        return function (callable $handler) use ($decider, $delay) {
+        return function ($handler) use ($decider, $delay) {
             return new RetryMiddleware($decider, $handler, $delay);
         };
     }
@@ -184,9 +184,9 @@ final class Middleware
      */
     public static function log(LoggerInterface $logger, MessageFormatter $formatter, $logLevel = LogLevel::INFO)
     {
-        return function (callable $handler) use ($logger, $formatter, $logLevel) {
+        return function ($handler) use ($logger, $formatter, $logLevel) {
             return function ($request, array $options) use ($handler, $logger, $formatter, $logLevel) {
-                return $handler($request, $options)->then(
+                return call_user_func($handler, $request, $options)->then(
                     function ($response) use ($logger, $request, $formatter, $logLevel) {
                         $message = $formatter->format($request, $response);
                         $logger->log($logLevel, $message);
@@ -213,7 +213,7 @@ final class Middleware
      */
     public static function prepareBody()
     {
-        return function (callable $handler) {
+        return function ($handler) {
             return new PrepareBodyMiddleware($handler);
         };
     }
@@ -226,11 +226,11 @@ final class Middleware
      *                     a RequestInterface.
      * @return callable
      */
-    public static function mapRequest(callable $fn)
+    public static function mapRequest($fn)
     {
-        return function (callable $handler) use ($fn) {
+        return function ($handler) use ($fn) {
             return function ($request, array $options) use ($handler, $fn) {
-                return $handler($fn($request), $options);
+                return call_user_func($handler, call_user_func($fn, $request), $options);
             };
         };
     }
@@ -243,11 +243,11 @@ final class Middleware
      *                     returns a ResponseInterface.
      * @return callable
      */
-    public static function mapResponse(callable $fn)
+    public static function mapResponse($fn)
     {
-        return function (callable $handler) use ($fn) {
+        return function ($handler) use ($fn) {
             return function ($request, array $options) use ($handler, $fn) {
-                return $handler($request, $options)->then($fn);
+                return call_user_func($handler, $request, $options)->then($fn);
             };
         };
     }

@@ -186,13 +186,14 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
         $handler = $stack->resolve();
         $request = new Request('GET', 'http://example.com?a=b');
         $call = false;
-        $promise = $handler($request, array(
+        $assertEquals = array($this, 'assertEquals');
+        $promise = call_user_func($handler, $request, array(
             'allow_redirects' => array(
                 'max' => 2,
-                'on_redirect' => function ($request, $response, $uri) use (&$call) {
-                    $this->assertEquals(302, $response->getStatusCode());
-                    $this->assertEquals('GET', $request->getMethod());
-                    $this->assertEquals('http://test.com', (string) $uri);
+                'on_redirect' => function ($request, $response, $uri) use (&$call, $assertEquals) {
+                    call_user_func($assertEquals, 302, $response->getStatusCode());
+                    call_user_func($assertEquals, 'GET', $request->getMethod());
+                    call_user_func($assertEquals, 'http://test.com', (string) $uri);
                     $call = true;
                 }
             )
@@ -203,10 +204,11 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveAuthorizationHeaderOnRedirect()
     {
+        $assertFalse = array($this, 'assertFalse');
         $mock = new MockHandler(array(
             new Response(302, array('Location' => 'http://test.com')),
-            function (RequestInterface $request) {
-                $this->assertFalse($request->hasHeader('Authorization'));
+            function (RequestInterface $request) use ($assertFalse) {
+                call_user_func($assertFalse, $request->hasHeader('Authorization'));
                 return new Response(200);
             }
         ));
@@ -217,10 +219,11 @@ class RedirectMiddlewareTest extends \PHPUnit_Framework_TestCase
 
     public function testNotRemoveAuthorizationHeaderOnRedirect()
     {
+        $assertTrue = array($this, 'assertTrue');
         $mock = new MockHandler(array(
             new Response(302, array('Location' => 'http://example.com/2')),
-            function (RequestInterface $request) {
-                $this->assertTrue($request->hasHeader('Authorization'));
+            function (RequestInterface $request) use ($assertTrue) {
+                call_user_func($assertTrue, $request->hasHeader('Authorization'));
                 return new Response(200);
             }
         ));

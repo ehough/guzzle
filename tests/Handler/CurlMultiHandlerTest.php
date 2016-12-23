@@ -10,10 +10,10 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
 {
     public function testSendsRequest()
     {
-        Server::enqueue([new Response()]);
+        Server::enqueue(array(new Response()));
         $a = new CurlMultiHandler();
         $request = new Request('GET', Server::$url);
-        $response = $a($request, [])->wait();
+        $response = $a($request, array())->wait();
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -24,12 +24,12 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
     public function testCreatesExceptions()
     {
         $a = new CurlMultiHandler();
-        $a(new Request('GET', 'http://localhost:123'), [])->wait();
+        $a(new Request('GET', 'http://localhost:123'), array())->wait();
     }
 
     public function testCanSetSelectTimeout()
     {
-        $a = new CurlMultiHandler(['select_timeout' => 2]);
+        $a = new CurlMultiHandler(array('select_timeout' => 2));
         $this->assertEquals(2, $this->readAttribute($a, 'selectTimeout'));
     }
 
@@ -41,7 +41,7 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
         $a = new CurlMultiHandler();
         $responses = array();
         for ($i = 0; $i < 10; $i++) {
-            $response = $a(new Request('GET', Server::$url), []);
+            $response = $a(new Request('GET', Server::$url), array());
             $response->cancel();
             $responses[] = $response;
         }
@@ -50,9 +50,9 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
     public function testCannotCancelFinished()
     {
         Server::flush();
-        Server::enqueue([new Response(200)]);
+        Server::enqueue(array(new Response(200)));
         $a = new CurlMultiHandler();
-        $response = $a(new Request('GET', Server::$url), []);
+        $response = $a(new Request('GET', Server::$url), array());
         $response->wait();
         $response->cancel();
     }
@@ -60,10 +60,10 @@ class CurlMultiHandlerTest extends \PHPUnit_Framework_TestCase
     public function testDelaysConcurrently()
     {
         Server::flush();
-        Server::enqueue([new Response()]);
+        Server::enqueue(array(new Response()));
         $a = new CurlMultiHandler();
         $expected = microtime(true) + (100 / 1000);
-        $response = $a(new Request('GET', Server::$url), ['delay' => 100]);
+        $response = $a(new Request('GET', Server::$url), array('delay' => 100));
         $response->wait();
         $this->assertGreaterThanOrEqual($expected, microtime(true));
     }

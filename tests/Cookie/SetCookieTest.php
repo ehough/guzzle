@@ -16,14 +16,14 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
 
     public function testConvertsDateTimeMaxAgeToUnixTimestamp()
     {
-        $cookie = new SetCookie(['Expires' => 'November 20, 1984']);
+        $cookie = new SetCookie(array('Expires' => 'November 20, 1984'));
         $this->assertInternalType('integer', $cookie->getExpires());
     }
 
     public function testAddsExpiresBasedOnMaxAge()
     {
         $t = time();
-        $cookie = new SetCookie(['Max-Age' => 100]);
+        $cookie = new SetCookie(array('Max-Age' => 100));
         $this->assertEquals($t + 100, $cookie->getExpires());
     }
 
@@ -56,8 +56,9 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($cookie->getSecure());
         $this->assertTrue($cookie->getDiscard());
         $this->assertTrue($cookie->getHttpOnly());
-        $this->assertEquals('baz', $cookie->toArray()['foo']);
-        $this->assertEquals('bam', $cookie->toArray()['bar']);
+        $array = $cookie->toArray();
+        $this->assertEquals('baz', $array['foo']);
+        $this->assertEquals('bam', $array['bar']);
 
         $cookie->setName('a');
         $cookie->setValue('b');
@@ -119,23 +120,23 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
 
     public function pathMatchProvider()
     {
-        return [
-            ['/foo', '/foo', true],
-            ['/foo', '/Foo', false],
-            ['/foo', '/fo', false],
-            ['/foo', '/foo/bar', true],
-            ['/foo', '/foo/bar/baz', true],
-            ['/foo', '/foo/bar//baz', true],
-            ['/foo', '/foobar', false],
-            ['/foo/bar', '/foo', false],
-            ['/foo/bar', '/foobar', false],
-            ['/foo/bar', '/foo/bar', true],
-            ['/foo/bar', '/foo/bar/', true],
-            ['/foo/bar', '/foo/bar/baz', true],
-            ['/foo/bar/', '/foo/bar', false],
-            ['/foo/bar/', '/foo/bar/', true],
-            ['/foo/bar/', '/foo/bar/baz', true],
-        ];
+        return array(
+            array('/foo', '/foo', true),
+            array('/foo', '/Foo', false),
+            array('/foo', '/fo', false),
+            array('/foo', '/foo/bar', true),
+            array('/foo', '/foo/bar/baz', true),
+            array('/foo', '/foo/bar//baz', true),
+            array('/foo', '/foobar', false),
+            array('/foo/bar', '/foo', false),
+            array('/foo/bar', '/foobar', false),
+            array('/foo/bar', '/foo/bar', true),
+            array('/foo/bar', '/foo/bar/', true),
+            array('/foo/bar', '/foo/bar/baz', true),
+            array('/foo/bar/', '/foo/bar', false),
+            array('/foo/bar/', '/foo/bar/', true),
+            array('/foo/bar/', '/foo/bar/baz', true),
+        );
     }
 
     /**
@@ -176,14 +177,14 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
 
     public function testDoesNotMatchIp()
     {
-        $cookie = new SetCookie(['Domain' => '192.168.16.']);
+        $cookie = new SetCookie(array('Domain' => '192.168.16.'));
         $this->assertFalse($cookie->matchesDomain('192.168.16.121'));
     }
 
     public function testConvertsToString()
     {
         $t = 1382916008;
-        $cookie = new SetCookie([
+        $cookie = new SetCookie(array(
             'Name' => 'test',
             'Value' => '123',
             'Domain' => 'foo.com',
@@ -191,7 +192,7 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
             'Path' => '/abc',
             'HttpOnly' => true,
             'Secure' => true
-        ]);
+        ));
         $this->assertEquals(
             'test=123; Domain=foo.com; Path=/abc; Expires=Sun, 27 Oct 2013 23:20:08 GMT; Secure; HttpOnly',
             (string) $cookie
@@ -221,11 +222,11 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
                     'HttpOnly' => false
                 )
             ),
-            array('', []),
-            array('foo', []),
+            array('', array()),
+            array('foo', array()),
             array(
                 'foo="bar"',
-                [
+                array(
                     'Name' => 'foo',
                     'Value' => '"bar"',
                     'Discard' => null,
@@ -235,7 +236,7 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
                     'Path' => '/',
                     'Secure' => null,
                     'HttpOnly' => false
-                ]
+                )
             ),
             // Test setting a blank value for a cookie
             array(array(
@@ -381,7 +382,7 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
                     $this->assertEquals($p[$key], $parsed[$key], 'Comparing ' . $key . ' ' . var_export($value, true) . ' : ' . var_export($parsed, true) . ' | ' . var_export($p, true));
                 }
             } else {
-                $this->assertEquals([
+                $this->assertEquals(array(
                     'Name' => null,
                     'Value' => null,
                     'Domain' => null,
@@ -391,7 +392,7 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
                     'Secure' => false,
                     'Discard' => false,
                     'HttpOnly' => false,
-                ], $p);
+                ), $p);
             }
         }
     }

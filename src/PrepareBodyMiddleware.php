@@ -20,7 +20,7 @@ class PrepareBodyMiddleware
     /**
      * @param callable $nextHandler Next handler to invoke.
      */
-    public function __construct(callable $nextHandler)
+    public function __construct($nextHandler)
     {
         $this->nextHandler = $nextHandler;
     }
@@ -39,7 +39,7 @@ class PrepareBodyMiddleware
         if (isset(self::$skipMethods[$request->getMethod()])
             || $request->getBody()->getSize() === 0
         ) {
-            return $fn($request, $options);
+            return call_user_func($fn, $request, $options);
         }
 
         $modify = array();
@@ -69,7 +69,7 @@ class PrepareBodyMiddleware
         // Add the expect header if needed.
         $this->addExpectHeader($request, $options, $modify);
 
-        return $fn(Psr7\modify_request($request, $modify), $options);
+        return call_user_func($fn, Psr7\modify_request($request, $modify), $options);
     }
 
     private function addExpectHeader(

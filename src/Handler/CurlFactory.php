@@ -104,7 +104,7 @@ class CurlFactory implements CurlFactoryInterface
      * @return \Hough\Promise\PromiseInterface
      */
     public static function finish(
-        callable $handler,
+        $handler,
         EasyHandle $easy,
         CurlFactoryInterface $factory
     ) {
@@ -142,7 +142,7 @@ class CurlFactory implements CurlFactoryInterface
     }
 
     private static function finishError(
-        callable $handler,
+        $handler,
         EasyHandle $easy,
         CurlFactoryInterface $factory
     ) {
@@ -479,7 +479,7 @@ class CurlFactory implements CurlFactoryInterface
      * without an error status.
      */
     private static function retryFailedRewind(
-        callable $handler,
+        $handler,
         EasyHandle $easy,
         array $ctx
     ) {
@@ -512,7 +512,7 @@ class CurlFactory implements CurlFactoryInterface
             $easy->options['_curl_retries']++;
         }
 
-        return $handler($easy->request, $easy->options);
+        return call_user_func($handler, $easy->request, $easy->options);
     }
 
     private function createHeaderFn(EasyHandle $easy)
@@ -538,7 +538,7 @@ class CurlFactory implements CurlFactoryInterface
                 $easy->createResponse();
                 if ($onHeaders !== null) {
                     try {
-                        $onHeaders($easy->response);
+                        call_user_func($onHeaders, $easy->response);
                     } catch (\Exception $e) {
                         // Associate the exception with the handle and trigger
                         // a curl header write error by returning 0.

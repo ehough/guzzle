@@ -38,23 +38,23 @@ class FileCookieJarTest extends \PHPUnit_Framework_TestCase
     public function testPersistsToFile($testSaveSessionCookie = false)
     {
         $jar = new FileCookieJar($this->file, $testSaveSessionCookie);
-        $jar->setCookie(new SetCookie([
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'foo',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
             'Expires' => time() + 1000
-        ]));
-        $jar->setCookie(new SetCookie([
+        )));
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'baz',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
             'Expires' => time() + 1000
-        ]));
-        $jar->setCookie(new SetCookie([
+        )));
+        $jar->setCookie(new SetCookie(array(
             'Name'    => 'boo',
             'Value'   => 'bar',
             'Domain'  => 'foo.com',
-        ]));
+        )));
 
         $this->assertEquals(3, count($jar));
         unset($jar);

@@ -52,7 +52,7 @@ class Pool implements PromisorInterface
         $iterable = \Hough\Promise\iter_for($requests);
         $requests = new PoolGenerator($iterable, $client, $opts);
 
-        $this->each = new EachPromise($requests(), $config);
+        $this->each = new EachPromise(call_user_func($requests), $config);
     }
 
     public function promise()
@@ -101,7 +101,7 @@ class Pool implements PromisorInterface
         } else {
             $currentFn = $options[$name];
             $options[$name] = function ($v, $k) use (&$results, $currentFn) {
-                $currentFn($v, $k);
+                call_user_func($currentFn, $v, $k);
                 $results[$k] = $v;
             };
         }

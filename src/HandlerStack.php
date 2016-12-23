@@ -35,7 +35,7 @@ class HandlerStack
      *
      * @return HandlerStack
      */
-    public static function create(callable $handler = null)
+    public static function create($handler = null)
     {
         $stack = new self($handler ?: choose_handler());
         $stack->push(Middleware::httpErrors(), 'http_errors');
@@ -49,7 +49,7 @@ class HandlerStack
     /**
      * @param callable $handler Underlying HTTP handler.
      */
-    public function __construct(callable $handler = null)
+    public function __construct($handler = null)
     {
         $this->handler = $handler;
     }
@@ -64,7 +64,7 @@ class HandlerStack
     {
         $handler = $this->resolve();
 
-        return $handler($request, $options);
+        return call_user_func($handler, $request, $options);
     }
 
     /**
@@ -102,7 +102,7 @@ class HandlerStack
      * @param callable $handler Accepts a request and array of options and
      *                          returns a Promise.
      */
-    public function setHandler(callable $handler)
+    public function setHandler($handler)
     {
         $this->handler = $handler;
         $this->cached = null;
@@ -124,7 +124,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $name       Name to register for this middleware.
      */
-    public function unshift(callable $middleware, $name = null)
+    public function unshift($middleware, $name = null)
     {
         array_unshift($this->stack, array($middleware, $name));
         $this->cached = null;
@@ -136,7 +136,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $name       Name to register for this middleware.
      */
-    public function push(callable $middleware, $name = '')
+    public function push($middleware, $name = '')
     {
         $this->stack[] = array($middleware, $name);
         $this->cached = null;
@@ -149,7 +149,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $withName   Name to register for this middleware.
      */
-    public function before($findName, callable $middleware, $withName = '')
+    public function before($findName, $middleware, $withName = '')
     {
         $this->splice($findName, $withName, $middleware, true);
     }
@@ -161,7 +161,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $withName   Name to register for this middleware.
      */
-    public function after($findName, callable $middleware, $withName = '')
+    public function after($findName, $middleware, $withName = '')
     {
         $this->splice($findName, $withName, $middleware, false);
     }
@@ -228,7 +228,7 @@ class HandlerStack
      * @param callable $middleware
      * @param          $before
      */
-    private function splice($findName, $withName, callable $middleware, $before)
+    private function splice($findName, $withName, $middleware, $before)
     {
         $this->cached = null;
         $idx = $this->findByName($findName);

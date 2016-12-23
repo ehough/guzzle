@@ -228,7 +228,7 @@ class StreamHandler
      * @return resource
      * @throws \RuntimeException on error
      */
-    private function createResource(callable $callback)
+    private function createResource($callback)
     {
         $errors = null;
         set_error_handler(function ($_, $msg, $file, $line) use (&$errors) {
@@ -240,7 +240,7 @@ class StreamHandler
             return true;
         });
 
-        $resource = $callback();
+        $resource = call_user_func($callback);
         restore_error_handler();
 
         if (!$resource) {
@@ -423,7 +423,7 @@ class StreamHandler
             $params,
             function ($code, $a, $b, $c, $transferred, $total) use ($value) {
                 if ($code == STREAM_NOTIFY_PROGRESS) {
-                    $value($total, $transferred, null, null);
+                    call_user_func($value, $total, $transferred, null, null);
                 }
             }
         );
@@ -466,7 +466,7 @@ class StreamHandler
         );
     }
 
-    private function addNotification(array &$params, callable $notify)
+    private function addNotification(array &$params, $notify)
     {
         // Wrap the existing function if needed.
         if (!isset($params['notification'])) {
