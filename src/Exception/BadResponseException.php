@@ -14,7 +14,7 @@ class BadResponseException extends RequestException
         RequestInterface $request,
         ResponseInterface $response = null,
         \Exception $previous = null,
-        array $handlerContext = []
+        array $handlerContext = array()
     ) {
         if (null === $response) {
             @trigger_error(
