@@ -19,6 +19,8 @@ class RedirectMiddleware
 {
     const HISTORY_HEADER = 'X-Guzzle-Redirect-History';
 
+    const STATUS_HISTORY_HEADER = 'X-Guzzle-Redirect-Status-History';
+
     public static $defaultSettings = array(
         'max'             => 5,
         'protocols'       => array('http', 'https'),
@@ -109,24 +111,29 @@ class RedirectMiddleware
         if (!empty($options['allow_redirects']['track_redirects'])) {
             return $this->withTracking(
                 $promise,
-                (string) $nextRequest->getUri()
+                (string) $nextRequest->getUri(),
+                $response->getStatusCode()
             );
         }
 
         return $promise;
     }
 
-    private function withTracking(PromiseInterface $promise, $uri)
+    private function withTracking(PromiseInterface $promise, $uri, $statusCode)
     {
-        $historyHeader = self::HISTORY_HEADER;
+        $historyHeaderName = self::HISTORY_HEADER;
+        $statusHistoryHeaderName = self::STATUS_HISTORY_HEADER;
         return $promise->then(
-            function (ResponseInterface $response) use ($uri, $historyHeader) {
+            function (ResponseInterface $response) use ($uri, $statusCode, $historyHeaderName, $statusHistoryHeaderName) {
                 // Note that we are pushing to the front of the list as this
                 // would be an earlier response than what is currently present
                 // in the history header.
-                $header = $response->getHeader($historyHeader);
-                array_unshift($header, $uri);
-                return $response->withHeader($historyHeader, $header);
+                $historyHeader = $response->getHeader($historyHeaderName);
+                $statusHistoryHeader = $response->getHeader($statusHistoryHeaderName);
+                array_unshift($historyHeader, $uri);
+                array_unshift($statusHistoryHeader, $statusCode);
+                return $response->withHeader($historyHeaderName, $historyHeader)
+                                ->withHeader($statusHistoryHeaderName, $statusHistoryHeader);
             }
         );
     }
