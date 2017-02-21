@@ -667,7 +667,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testHandlerIsCallable()
     {
-        new Client(['handler' => 'not_cllable']);
+        new Client(array('handler' => 'not_cllable'));
     }
 
 }
