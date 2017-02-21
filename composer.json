@@ -38,5 +38,8 @@
         "psr-4": {
             "Hough\\Guzzle\\Test\\": "tests/"
         }
+    },
+    "suggest": {
+        "psr/log": "Required for using the Log middleware"
     }
 }
