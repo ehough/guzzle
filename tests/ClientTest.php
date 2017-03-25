@@ -393,6 +393,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ), $last['curl']);
     }
 
+    public function testAuthCanBeArrayForNtlmAuth()
+    {
+        $mock = new MockHandler(array(new Response()));
+        $client = new Client(array('handler' => $mock));
+        $client->get('http://foo.com', array('auth' => array('a', 'b', 'ntlm')));
+        $last = $mock->getLastOptions();
+        $this->assertEquals(array(
+            CURLOPT_HTTPAUTH => 8,
+            CURLOPT_USERPWD  => 'a:b'
+        ), $last['curl']);
+    }
+
     public function testAuthCanBeCustomType()
     {
         $mock = new MockHandler(array(new Response()));

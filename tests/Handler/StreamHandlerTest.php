@@ -3,6 +3,7 @@ namespace Hough\Test\Guzzle\Handler;
 
 use Hough\Guzzle\Exception\ConnectException;
 use Hough\Guzzle\Handler\StreamHandler;
+use Hough\Guzzle\RequestOptions;
 use Hough\Psr7;
 use Hough\Psr7\Request;
 use Hough\Psr7\Response;
@@ -664,5 +665,27 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $stream = $body->detach();
         $this->assertEquals('hi there... This has a lot of data!', stream_get_contents($stream));
         fclose($stream);
+    }
+
+    public function testHonorsReadTimeout()
+    {
+        Server::flush();
+        $handler = new StreamHandler();
+        $response = $handler(
+            new Request('GET', Server::$url . 'guzzle-server/read-timeout'),
+            array(
+                RequestOptions::READ_TIMEOUT => 1,
+                RequestOptions::STREAM => true,
+            )
+        )->wait();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('OK', $response->getReasonPhrase());
+        $body = $response->getBody()->detach();
+        $line = fgets($body);
+        $this->assertEquals("sleeping 60 seconds ...\n", $line);
+        $line = fgets($body);
+        $this->assertFalse($line);
+        $this->assertTrue(stream_get_meta_data($body)['timed_out']);
+        $this->assertFalse(feof($body));
     }
 }
