@@ -9,7 +9,7 @@ A PHP 5.3-compatible fork of [Guzzle 6](https://github.com/guzzle/guzzle).
 
 # Why?
 
-Sadly, [60%](https://w3techs.com/technologies/details/pl-php/5/all) of all PHP web servers still (sadly) run PHP 5.4 and lower, but Guzzle needs PHP 5.5 or higher. This fork makes Guzzle 6 compatible with PHP 5.3.29 through 7.1.
+Sadly, [60%](https://w3techs.com/technologies/details/pl-php/5/all) of all PHP web servers still run PHP 5.4 and lower, but Guzzle needs PHP 5.5 or higher. This fork makes Guzzle 6 compatible with PHP 5.3.29 through 7.1.
 
 # How to Use This Fork
 
