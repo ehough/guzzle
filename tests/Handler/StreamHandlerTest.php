@@ -685,7 +685,8 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("sleeping 60 seconds ...\n", $line);
         $line = fgets($body);
         $this->assertFalse($line);
-        $this->assertTrue(stream_get_meta_data($body)['timed_out']);
+        $metadata = stream_get_meta_data($body);
+        $this->assertTrue($metadata['timed_out']);
         $this->assertFalse(feof($body));
     }
 }
